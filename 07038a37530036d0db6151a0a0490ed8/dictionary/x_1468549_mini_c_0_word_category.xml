@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="9a250af7530036d0db6151a0a0490ead" label="Word category" max_length="40" name="x_1468549_mini_c_0_word_category" type="collection">
+        <element label="Description" max_length="2048" name="description" type="string"/>
+        <element label="Name" max_length="128" name="name" type="string"/>
+        <element attributes="edge_encryption_enabled=true" default="javascript:global.getNextObjNumberPadded();" label="Number" max_length="40" name="number" type="string"/>
+    </element>
+</database>

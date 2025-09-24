@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="739b4673534036d0db6151a0a0490e6b" extends="task" label="Instance" max_length="40" name="x_1468549_mini_c_0_instance" type="collection">
+        <element choice="1" label="Type" mandatory="true" max_length="40" name="type" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Zen" sequence="1" value="zen"/>
+                <element inactive_on_update="false" label="Times" sequence="0" value="times"/>
+            </choice>
+        </element>
+        <element label="Puzzle" max_length="32" name="puzzle" reference="x_1468549_mini_c_0_daily_puzzle" type="reference"/>
+    </element>
+</database>

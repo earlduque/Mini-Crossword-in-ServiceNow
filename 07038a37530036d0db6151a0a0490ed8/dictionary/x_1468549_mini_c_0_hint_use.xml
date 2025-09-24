@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="7bb746fb530036d0db6151a0a0490e51" label="Hint use" max_length="40" name="x_1468549_mini_c_0_hint_use" type="collection">
+        <element label="Word" max_length="32" name="word" reference="x_1468549_mini_c_0_word" type="reference"/>
+        <element choice="1" label="Type" mandatory="true" max_length="40" name="type" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Word" sequence="0" value="word"/>
+                <element inactive_on_update="false" label="Letter" sequence="1" value="letter"/>
+            </choice>
+        </element>
+        <element attributes="edge_encryption_enabled=true" default="javascript:global.getNextObjNumberPadded();" display="true" label="Number" max_length="40" name="number" type="string"/>
+        <element label="Instance" max_length="32" name="instance" reference="x_1468549_mini_c_0_instance" type="reference"/>
+        <element label="User" max_length="32" name="user" reference="sys_user" type="reference"/>
+        <index name="index">
+            <element name="instance"/>
+        </index>
+        <index name="index2">
+            <element name="user"/>
+        </index>
+        <index name="index3">
+            <element name="word"/>
+        </index>
+    </element>
+</database>

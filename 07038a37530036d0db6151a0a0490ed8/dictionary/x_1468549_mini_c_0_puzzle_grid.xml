@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="500782bb530036d0db6151a0a0490e4b" label="Grid" max_length="40" name="x_1468549_mini_c_0_puzzle_grid" type="collection">
+        <element attributes="edge_encryption_enabled=true" default="javascript:global.getNextObjNumberPadded();" display="true" label="Number" max_length="40" name="number" type="string"/>
+        <element label="Column" max_length="40" name="column" type="integer"/>
+        <element label="Row" max_length="40" name="row" type="integer"/>
+        <element choice="1" label="Direction" mandatory="true" max_length="40" name="direction" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Horizontal" sequence="1" value="horizontal"/>
+                <element inactive_on_update="false" label="Vertical" sequence="0" value="vertical"/>
+            </choice>
+        </element>
+        <element label="Word" max_length="32" name="word" reference="x_1468549_mini_c_0_word" type="reference"/>
+        <element label="Daily puzzle" max_length="32" name="daily_puzzle" reference="x_1468549_mini_c_0_daily_puzzle" type="reference"/>
+        <index name="index">
+            <element name="daily_puzzle"/>
+        </index>
+        <index name="index2">
+            <element name="word"/>
+        </index>
+    </element>
+</database>

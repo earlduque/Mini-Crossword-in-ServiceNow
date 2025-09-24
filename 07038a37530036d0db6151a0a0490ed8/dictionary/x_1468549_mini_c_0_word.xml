@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="56060e3b530036d0db6151a0a0490ecb" label="Word" max_length="40" name="x_1468549_mini_c_0_word" type="collection">
+        <element label="Hint" max_length="2048" name="hint" type="string"/>
+        <element attributes="edge_encryption_enabled=true" default="javascript:global.getNextObjNumberPadded();" label="Number" max_length="40" name="number" type="string"/>
+        <element display="true" label="Word" max_length="5" name="word" type="string"/>
+        <element label="Category" max_length="32" name="category" reference="x_1468549_mini_c_0_word_category" type="reference"/>
+        <element label="Definition" max_length="2048" name="definition" type="string"/>
+        <index name="index">
+            <element name="category"/>
+        </index>
+    </element>
+</database>

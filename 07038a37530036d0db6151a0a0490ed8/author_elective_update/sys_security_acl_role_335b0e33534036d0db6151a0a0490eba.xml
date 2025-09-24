@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="DELETE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-09-24 18:47:17</sys_created_on>
+        <sys_id>335b0e33534036d0db6151a0a0490eba</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_1468549_mini_c_0_instance.x_1468549_mini_c_0.admin</sys_name>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_security_acl display_value="x_1468549_mini_c_0_instance">335b0e33534036d0db6151a0a0490eb7</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_335b0e33534036d0db6151a0a0490eba</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-09-24 18:47:17</sys_updated_on>
+        <sys_user_role display_value="x_1468549_mini_c_0.admin" name="x_1468549_mini_c_0.admin">1b038a37530036d0db6151a0a0490efb</sys_user_role>
+    </sys_security_acl_role>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</application>
+        <file_path/>
+        <instance_id>1cd6e4481b9ace94c8432f8dee4bcbce</instance_id>
+        <instance_name>dev271501</instance_name>
+        <name>sys_security_acl_role_335b0e33534036d0db6151a0a0490eba</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role"><sys_security_acl_role action="INSERT_OR_UPDATE"><sys_class_name>sys_security_acl_role</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2025-09-24 18:47:17</sys_created_on><sys_id>335b0e33534036d0db6151a0a0490eba</sys_id><sys_mod_count>0</sys_mod_count><sys_name>x_1468549_mini_c_0_instance.x_1468549_mini_c_0.admin</sys_name><sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package><sys_policy/><sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope><sys_security_acl display_value="x_1468549_mini_c_0_instance">335b0e33534036d0db6151a0a0490eb7</sys_security_acl><sys_update_name>sys_security_acl_role_335b0e33534036d0db6151a0a0490eba</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2025-09-24 18:47:17</sys_updated_on><sys_user_role display_value="x_1468549_mini_c_0.admin" name="x_1468549_mini_c_0.admin">1b038a37530036d0db6151a0a0490efb</sys_user_role></sys_security_acl_role></record_update>]]></payload>
+        <payload_hash>263878904</payload_hash>
+        <record_name>x_1468549_mini_c_0_instance.x_1468549_mini_c_0.admin</record_name>
+        <reverted_from/>
+        <source>4b038a37530036d0db6151a0a0490ef5</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-09-24 18:47:17</sys_created_on>
+        <sys_id>bf5b0e33534036d0db6151a0a0490ebc</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1997d0d25710000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-09-24 18:47:17</sys_updated_on>
+        <type>Access Roles</type>
+        <update_guid>375b0e33204036d0ecf24819b419f3bc</update_guid>
+        <update_guid_history>375b0e33204036d0ecf24819b419f3bc:263878904</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="x_1468549_mini_c_0_instance.x_1468549_mini_c_0.admin">8f8b8273534036d0db6151a0a0490e0b</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-09-24 18:48:03</sys_created_on>
+        <sys_db_object display_value="" name="sys_security_acl_role">sys_security_acl_role</sys_db_object>
+        <sys_id>365200ce10714ad687df37a1b076a051</sys_id>
+        <sys_metadata>335b0e33534036d0db6151a0a0490eba</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_1468549_mini_c_0_instance.x_1468549_mini_c_0.admin</sys_name>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_parent display_value="">335b0e33534036d0db6151a0a0490eb7</sys_parent>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_scope_delete display_value="">04424be1367248f187f69b7b558d9819</sys_scope_delete>
+        <sys_update_name>sys_security_acl_role_335b0e33534036d0db6151a0a0490eba</sys_update_name>
+        <sys_update_version display_value="sys_security_acl_role_335b0e33534036d0db6151a0a0490eba">bf5b0e33534036d0db6151a0a0490ebc</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-09-24 18:48:03</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>
