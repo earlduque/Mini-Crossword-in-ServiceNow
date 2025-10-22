@@ -4,13 +4,41 @@
             <element>number</element>
             <position>0</position>
             <sys_created_by>admin</sys_created_by>
-            <sys_created_on>2025-09-24 18:20:11</sys_created_on>
-            <sys_id>32250af7530036d0db6151a0a0490eac</sys_id>
+            <sys_created_on>2025-10-01 18:08:46</sys_created_on>
+            <sys_id>c4b502ce535cb610db6151a0a0490e9c</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_word_category" sys_domain="global" view="Default view">be250af7530036d0db6151a0a0490ea8</sys_ui_section>
             <sys_updated_by>admin</sys_updated_by>
-            <sys_updated_on>2025-09-24 18:20:11</sys_updated_on>
+            <sys_updated_on>2025-10-01 18:08:46</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>name</element>
+            <position>1</position>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-10-01 18:08:46</sys_created_on>
+            <sys_id>04b502ce535cb610db6151a0a0490e9d</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_word_category" sys_domain="global" view="Default view">be250af7530036d0db6151a0a0490ea8</sys_ui_section>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-10-01 18:08:46</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>description</element>
+            <position>2</position>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-10-01 18:08:46</sys_created_on>
+            <sys_id>0cb502ce535cb610db6151a0a0490e9d</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_word_category" sys_domain="global" view="Default view">be250af7530036d0db6151a0a0490ea8</sys_ui_section>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-10-01 18:08:46</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>

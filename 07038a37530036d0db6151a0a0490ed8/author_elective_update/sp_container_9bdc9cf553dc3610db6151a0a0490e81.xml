@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container">
+    <sp_container action="DELETE">
+        <background_color/>
+        <background_image/>
+        <background_style>default</background_style>
+        <bootstrap_alt>false</bootstrap_alt>
+        <class_name/>
+        <container_class_name/>
+        <name>konami - Test Page - Container 1</name>
+        <order>1</order>
+        <semantic_tag/>
+        <sp_page display_value="konami">97dc9cf553dc3610db6151a0a0490e7e</sp_page>
+        <subheader>false</subheader>
+        <sys_class_name>sp_container</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-09-30 15:52:18</sys_created_on>
+        <sys_id>9bdc9cf553dc3610db6151a0a0490e81</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>konami - Test Page - Container 1</sys_name>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name>sp_container_9bdc9cf553dc3610db6151a0a0490e81</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-09-30 15:52:18</sys_updated_on>
+        <title/>
+        <width>container</width>
+    </sp_container>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</application>
+        <file_path/>
+        <instance_id>1cd6e4481b9ace94c8432f8dee4bcbce</instance_id>
+        <instance_name>dev271501</instance_name>
+        <name>sp_container_9bdc9cf553dc3610db6151a0a0490e81</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container"><sp_container action="INSERT_OR_UPDATE"><background_color/><background_image/><background_style>default</background_style><bootstrap_alt>false</bootstrap_alt><class_name/><container_class_name/><name>konami - Test Page - Container 1</name><order>1</order><semantic_tag/><sp_page display_value="konami">97dc9cf553dc3610db6151a0a0490e7e</sp_page><subheader>false</subheader><sys_class_name>sp_container</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2025-09-30 15:52:18</sys_created_on><sys_id>9bdc9cf553dc3610db6151a0a0490e81</sys_id><sys_mod_count>0</sys_mod_count><sys_name>konami - Test Page - Container 1</sys_name><sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package><sys_policy/><sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope><sys_update_name>sp_container_9bdc9cf553dc3610db6151a0a0490e81</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2025-09-30 15:52:18</sys_updated_on><title/><width>container</width></sp_container></record_update>]]></payload>
+        <payload_hash>757388185</payload_hash>
+        <record_name>konami - Test Page - Container 1</record_name>
+        <reverted_from/>
+        <source>23df880153507210db6151a0a0490e3e</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-09-30 15:52:18</sys_created_on>
+        <sys_id>53dc9cf553dc3610db6151a0a0490e84</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1999b5319460000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-09-30 15:52:18</sys_updated_on>
+        <type>Container</type>
+        <update_guid>d7dc9cf58ddc3610ea89dc35eb8d5283</update_guid>
+        <update_guid_history>d7dc9cf58ddc3610ea89dc35eb8d5283:757388185</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="konami - Test Page - Container 1">d231c24a535cb610db6151a0a0490ed8</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 17:49:16</sys_created_on>
+        <sys_db_object display_value="" name="sp_container">sp_container</sys_db_object>
+        <sys_id>52107d76ad254e88b04cf6d1942bde31</sys_id>
+        <sys_metadata>9bdc9cf553dc3610db6151a0a0490e81</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>konami - Test Page - Container 1</sys_name>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_scope_delete display_value="">04424be1367248f187f69b7b558d9819</sys_scope_delete>
+        <sys_update_name>sp_container_9bdc9cf553dc3610db6151a0a0490e81</sys_update_name>
+        <sys_update_version display_value="sp_container_9bdc9cf553dc3610db6151a0a0490e81">53dc9cf553dc3610db6151a0a0490e84</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 17:49:16</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

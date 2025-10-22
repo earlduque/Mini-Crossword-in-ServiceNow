@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update>
-    <sys_dictionary action="INSERT_OR_UPDATE" element="row" table="x_1468549_mini_c_0_puzzle_grid">
+    <sys_dictionary action="INSERT_OR_UPDATE" element="" extends="sys_import_set_row" table="u_imp_tmpl_x_1468549_mini_c_0_word">
         <active>true</active>
         <array>false</array>
         <attributes/>
         <audit>false</audit>
         <calculation/>
-        <choice>3</choice>
+        <choice>0</choice>
         <choice_field/>
         <choice_table/>
-        <column_label>Row</column_label>
+        <column_label/>
         <comments/>
         <create_roles/>
-        <default_value>1</default_value>
+        <default_value/>
         <defaultsort/>
         <delete_roles/>
         <dependent/>
@@ -21,16 +21,16 @@
         <dynamic_creation_script/>
         <dynamic_default_value/>
         <dynamic_ref_qual/>
-        <element>row</element>
+        <element/>
         <element_reference>false</element_reference>
         <foreign_database/>
         <formula/>
         <function_definition/>
         <function_field>false</function_field>
-        <internal_type display_value="Choice">choice</internal_type>
+        <internal_type display_value="Collection">collection</internal_type>
         <mandatory>false</mandatory>
         <max_length>40</max_length>
-        <name>x_1468549_mini_c_0_puzzle_grid</name>
+        <name>u_imp_tmpl_x_1468549_mini_c_0_word</name>
         <next_element/>
         <primary>false</primary>
         <read_only>false</read_only>
@@ -46,14 +46,14 @@
         <staged>false</staged>
         <sys_class_name>sys_dictionary</sys_class_name>
         <sys_created_by>admin</sys_created_by>
-        <sys_created_on>2025-09-24 18:30:21</sys_created_on>
-        <sys_name>Row</sys_name>
+        <sys_created_on>2025-10-01 18:15:16</sys_created_on>
+        <sys_name>u_imp_tmpl_x_1468549_mini_c_0_word</sys_name>
         <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
         <sys_policy/>
         <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
-        <sys_update_name>sys_dictionary_x_1468549_mini_c_0_puzzle_grid_row</sys_update_name>
+        <sys_update_name>sys_dictionary_u_imp_tmpl_x_1468549_mini_c_0_word_null</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2025-10-01 18:48:57</sys_updated_on>
+        <sys_updated_on>2025-10-01 18:15:16</sys_updated_on>
         <table_reference>false</table_reference>
         <text_index>false</text_index>
         <unique>false</unique>

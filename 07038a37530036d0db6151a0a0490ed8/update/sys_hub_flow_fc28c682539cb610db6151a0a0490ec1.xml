@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_hub_flow">
+    <sys_hub_flow action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <acls/>
+        <active>false</active>
+        <annotation/>
+        <attributes/>
+        <authored_on_release_version>28000</authored_on_release_version>
+        <callable_by_client_api>false</callable_by_client_api>
+        <category/>
+        <compiler_build/>
+        <copied_from>049a0e497743011031e3b3c64b5a9996</copied_from>
+        <copied_from_name>FlowTemplate: Record Trigger</copied_from_name>
+        <description>Creates a 5x5 crossword clue sheet based off a category</description>
+        <display_name_after_preview/>
+        <flow_priority/>
+        <generation_source/>
+        <internal_name>puzzle_constructor</internal_name>
+        <label_cache>[]</label_cache>
+        <latest_snapshot/>
+        <master_snapshot/>
+        <master_snapshot_digest/>
+        <name>Puzzle constructor</name>
+        <natlang/>
+        <outputs/>
+        <pre_compiled>false</pre_compiled>
+        <remote_trigger_id/>
+        <run_as>system</run_as>
+        <run_with_roles/>
+        <sc_callable>false</sc_callable>
+        <show_draft_actions>false</show_draft_actions>
+        <show_triggered_flows>false</show_triggered_flows>
+        <status>draft</status>
+        <substatus/>
+        <sys_class_name>sys_hub_flow</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 18:19:28</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>fc28c682539cb610db6151a0a0490ec1</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>Puzzle constructor</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name>sys_hub_flow_fc28c682539cb610db6151a0a0490ec1</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 18:19:35</sys_updated_on>
+        <type>flow</type>
+        <updation_source/>
+        <version>2</version>
+        <version_record display_value="Created 2025-10-01 11:19:35">16284a82539cb610db6151a0a0490e59</version_record>
+    </sys_hub_flow>
+    <sys_translated_text action="delete_multiple" query="documentkey=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_variable_value action="delete_multiple" query="document_key=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_hub_flow_stage action="delete_multiple" query="flow=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_flow_cat_variable_model action="delete_multiple" query="id=fc28c682539cb610db6151a0a0490ec1^sys_idNOT IN7c28c682539cb610db6151a0a0490ec2"/>
+    <sys_flow_cat_variable_model action="INSERT_OR_UPDATE">
+        <id>fc28c682539cb610db6151a0a0490ec1</id>
+        <name>Puzzle constructor</name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 18:19:28</sys_created_on>
+        <sys_id>7c28c682539cb610db6151a0a0490ec2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_scope/>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 18:19:28</sys_updated_on>
+    </sys_flow_cat_variable_model>
+    <sys_flow_cat_variable action="delete_multiple" query="flow_catalog_model=7c28c682539cb610db6151a0a0490ec2"/>
+    <sys_hub_flow_input action="delete_multiple" query="model=fc28c682539cb610db6151a0a0490ec1^sys_idNOT IN7c28c682539cb610db6151a0a0490ed8,f828c682539cb610db6151a0a0490ec8"/>
+    <sys_hub_flow_input action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <array>false</array>
+        <array_denormalized>false</array_denormalized>
+        <attributes>element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,test_input_hidden=true,uiType=table_name</attributes>
+        <audit>false</audit>
+        <calculation><![CDATA[(function calculatedFieldValue(current) {
+
+	// Add your code here
+	return '';  // return the calculated value
+
+})(current);]]></calculation>
+        <choice/>
+        <choice_field/>
+        <choice_table/>
+        <column_label/>
+        <comments/>
+        <create_roles/>
+        <default_value/>
+        <defaultsort/>
+        <delete_roles/>
+        <dependent/>
+        <dependent_on_field/>
+        <display>false</display>
+        <dynamic_creation>false</dynamic_creation>
+        <dynamic_creation_script/>
+        <dynamic_default_value/>
+        <dynamic_ref_qual/>
+        <element>table_name</element>
+        <element_reference>false</element_reference>
+        <foreign_database/>
+        <formula/>
+        <function_definition/>
+        <function_field>false</function_field>
+        <help/>
+        <hint/>
+        <internal_type display_value="">table_name</internal_type>
+        <label>Table Name</label>
+        <mandatory>false</mandatory>
+        <max_length>200</max_length>
+        <model display_value="Puzzle constructor">fc28c682539cb610db6151a0a0490ec1</model>
+        <model_id>fc28c682539cb610db6151a0a0490ec1</model_id>
+        <model_table>sys_hub_flow</model_table>
+        <name>var__m_sys_hub_flow_input_fc28c682539cb610db6151a0a0490ec1</name>
+        <next_element/>
+        <order>101</order>
+        <primary>false</primary>
+        <read_only>false</read_only>
+        <read_roles/>
+        <reference/>
+        <reference_cascade_rule/>
+        <reference_floats>false</reference_floats>
+        <reference_key/>
+        <reference_qual/>
+        <reference_qual_condition/>
+        <reference_type/>
+        <sizeclass/>
+        <spell_check>false</spell_check>
+        <staged>false</staged>
+        <sys_class_name>sys_hub_flow_input</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 18:19:29</sys_created_on>
+        <sys_id>7c28c682539cb610db6151a0a0490ed8</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package/>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name/>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 18:19:29</sys_updated_on>
+        <table_reference>false</table_reference>
+        <text_index>false</text_index>
+        <unique>false</unique>
+        <use_dependent_field>false</use_dependent_field>
+        <use_dynamic_default>false</use_dynamic_default>
+        <use_reference_qualifier>simple</use_reference_qualifier>
+        <virtual>false</virtual>
+        <virtual_type>script</virtual_type>
+        <widget/>
+        <write_roles/>
+        <xml_view>false</xml_view>
+    </sys_hub_flow_input>
+    <sys_hub_action_input_action_instance action="delete_multiple" query="action_input=7c28c682539cb610db6151a0a0490ed8"/>
+    <sys_hub_flow_input action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <array>false</array>
+        <array_denormalized>false</array_denormalized>
+        <attributes>element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,uiType=document_id</attributes>
+        <audit>false</audit>
+        <calculation><![CDATA[(function calculatedFieldValue(current) {
+
+	// Add your code here
+	return '';  // return the calculated value
+
+})(current);]]></calculation>
+        <choice/>
+        <choice_field/>
+        <choice_table/>
+        <column_label/>
+        <comments/>
+        <create_roles/>
+        <default_value/>
+        <defaultsort/>
+        <delete_roles/>
+        <dependent>table_name</dependent>
+        <dependent_on_field>table_name</dependent_on_field>
+        <display>false</display>
+        <dynamic_creation>false</dynamic_creation>
+        <dynamic_creation_script/>
+        <dynamic_default_value/>
+        <dynamic_ref_qual/>
+        <element>current</element>
+        <element_reference>false</element_reference>
+        <foreign_database/>
+        <formula/>
+        <function_definition/>
+        <function_field>false</function_field>
+        <help/>
+        <hint/>
+        <internal_type display_value="">document_id</internal_type>
+        <label>Record</label>
+        <mandatory>true</mandatory>
+        <max_length>200</max_length>
+        <model display_value="Puzzle constructor">fc28c682539cb610db6151a0a0490ec1</model>
+        <model_id>fc28c682539cb610db6151a0a0490ec1</model_id>
+        <model_table>sys_hub_flow</model_table>
+        <name>var__m_sys_hub_flow_input_fc28c682539cb610db6151a0a0490ec1</name>
+        <next_element/>
+        <order>100</order>
+        <primary>false</primary>
+        <read_only>false</read_only>
+        <read_roles/>
+        <reference/>
+        <reference_cascade_rule/>
+        <reference_floats>false</reference_floats>
+        <reference_key/>
+        <reference_qual/>
+        <reference_qual_condition/>
+        <reference_type/>
+        <sizeclass/>
+        <spell_check>false</spell_check>
+        <staged>false</staged>
+        <sys_class_name>sys_hub_flow_input</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 18:19:28</sys_created_on>
+        <sys_id>f828c682539cb610db6151a0a0490ec8</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package/>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name/>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 18:19:28</sys_updated_on>
+        <table_reference>false</table_reference>
+        <text_index>false</text_index>
+        <unique>false</unique>
+        <use_dependent_field>true</use_dependent_field>
+        <use_dynamic_default>false</use_dynamic_default>
+        <use_reference_qualifier>simple</use_reference_qualifier>
+        <virtual>false</virtual>
+        <virtual_type>script</virtual_type>
+        <widget/>
+        <write_roles/>
+        <xml_view>false</xml_view>
+    </sys_hub_flow_input>
+    <sys_hub_action_input_action_instance action="delete_multiple" query="action_input=f828c682539cb610db6151a0a0490ec8"/>
+    <sys_hub_flow_output action="delete_multiple" query="model=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_hub_alias_mapping action="delete_multiple" query="source_id=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_hub_trigger_instance_v2 action="delete_multiple" query="flow=fc28c682539cb610db6151a0a0490ec1^sys_idNOT INc5280a82539cb610db6151a0a0490e36"/>
+    <sys_hub_trigger_instance_v2 action="INSERT_OR_UPDATE">
+        <comment/>
+        <display_text/>
+        <flow display_value="Puzzle constructor">fc28c682539cb610db6151a0a0490ec1</flow>
+        <generation_source/>
+        <name>Created</name>
+        <published_version/>
+        <remote_sys_id/>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 18:19:29</sys_created_on>
+        <sys_id>c5280a82539cb610db6151a0a0490e36</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_scope/>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 18:19:29</sys_updated_on>
+        <trigger_definition display_value="Created">798916a0c31322002841b63b12d3ae7c</trigger_definition>
+        <trigger_inputs>H4sIAAAAAAAA/+VYa2/qNhj+K1E+bVInJQQI6bcz6LRKXbsBZ/tQdZbjC0QnOCxx0tKq/312nISQC+XSbgf6BYnXjv0+j5/3Yt+/6Dz0ZjMSXrOIQ4bIZBVdY/1Sh30Hov7Ase2uZZimYZnEci3U77o96DjQ0i90H7rEF1On0PWJ+O8xTkIG/elqSYSZSzNgcCHHFpBhyINwpV/yMCYXOg2DxZQslj7kYjKFfiSMQYhJqF+aF3r6WbaG+DyBfiz/PwGz2x/0ug5YeMwDCBgAQ89fgWX8/JzOxF4k1lz9mX0gLEsYisW4XPil8PHGY9/UMJp7Pg4J0y/vHwQGiR1RBJ0OMZBlWp2OYXQGXdPtW67ZwRYkhtGAveIvb6BA2m7Kn2m3amCNmjxxwjDBBSE12kIC8R3zV8WMuUCkgCzgU+Q9i20HhpxHiQCFMg6KvyDjR5npCHI4ESsjHock5yPwEIkUHZhQGPt8WLapCXdL7gVMfaJQq68DP16wW8WGXixQOo44Ek6QpcQpPc9g0Mk8eBznXv7isZSSbNAPEPSLf5ALyboxl/686NTzxYkCxXQUxGEKeXw1vBuPwF9fpsNfr8ZgfDWZjq+H06uR/nqhR6to6MMoWnsp6AH/xHIP5XPmHVAA5Sco9Jb8C+Jekqv19eI9YmcYMOylTNbiB+VDUdmnkshK4shZ3BZUhlHIFJV2zUPr76s/6uGjjPtHUL8PISawJYJc2sJAg3u8gYxyJA3LA2Wo22Ips+wSTF3DOKVwypLrodG0CDDxR2WtKYUDjy1jLil+hIxHgAcAYgxKpyKnCp/2Dy+F9iNjLIyZ2AoUgqhHWnoExWHdeJGAfi9yS85z6ow84Fx145hpgVCO+NFQHAqauZaHJb1ewFmGnP6eh05Kb6bvBIYALIAgCsxjF2xwDGxn4Jj9ttCx0QaDafBKIen6w6s8d+ITxEuip1+j8r/fvCjy2KxEb4ExPb4axAKdCB4tZ1BBjU4L68MxCbMuoaQijUri3CaQ/dOpaVLqEtoxbMmSELtLTcM2epBiyzBQZ6vYWyHwivo30mpu/JCU+j4J9aUAvY3t6kHlgKT4/X20nmwGSrZO57Upr38/rlXKi7VXfSnErcyj3TX+zl0exIlM/vjwMvPhFYb6waNIawdUFxeib7MwiBmu5l+5puYxbT1D+yE7ix9PK/uWKw0NQrId7+aM00F5dI1ZiygPachW9eqijPvXEYuarkO6xBDlwxKVw+05jotgh1K7b5OO2SrpRhfPq368EWtJU7C2JexGHSdN8t+jivz/Dh5VSzIhN1YSNfb5asbjnDAgYIfAl1WhVjpmvodJPnZcZqltlazvkO/xZkYHDuqZto1skWJFaqFd4kKz2xG47b416L2FfJurvIGNcrK5Uab/5PYvi4z0rSXpfFVD38FLwGcJn4hwLkvw/n0XE9eh9Buo3Cs1I1IXWpoog1C7DdhP1+t52oSIop8+Tp1Qa1JuwHYBLYWsnRVqN+DzWsMpkP4s7BtI5R2r5cw/25tHJcKSTSob3jwOIfSA9xDSHfQcajUXG+pszxPt+M6no90xgSWtqbCpc9w1QSSNeaboJKu96AGSqQgxW9p6o4v+vKQc1bnn0d76CHSIs5+0W0nb2mNaFuktAQEtV7JRoIkBTWyieVTLvCVYc1canxNxPL647okNNbn7iZWwcgWvIy+C76xxq+txrXERZi27ipwQsPfpSSpxtPW1rIGv/VsOgm3Y61kt91un+nTW5OQbGM6n+dg7HyVN6W1rsd1v3eqajeW2JI9NOe3YXZwx6g97+Gvw4mQag4d/AfL80549JwAA</trigger_inputs>
+        <trigger_outputs/>
+        <trigger_type>record_create</trigger_type>
+        <updation_source/>
+    </sys_hub_trigger_instance_v2>
+    <sys_hub_action_instance_v2 action="delete_multiple" query="flow=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_hub_sub_flow_instance_v2 action="delete_multiple" query="flow=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_hub_flow_logic_instance_v2 action="delete_multiple" query="flow=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_hub_pill_compound action="delete_multiple" query="attached_to=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_hub_flow_variable action="delete_multiple" query="model=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_documentation action="INSERT_OR_UPDATE">
+        <element>current</element>
+        <help/>
+        <hint/>
+        <label>Record</label>
+        <language>en</language>
+        <name>var__m_sys_hub_flow_input_fc28c682539cb610db6151a0a0490ec1</name>
+        <plural/>
+        <sys_class_name>sys_documentation</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 18:19:28</sys_created_on>
+        <sys_id>3828c682539cb610db6151a0a0490ecb</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name/>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 18:19:28</sys_updated_on>
+        <url/>
+        <url_target/>
+    </sys_documentation>
+    <sys_documentation action="INSERT_OR_UPDATE">
+        <element>table_name</element>
+        <help/>
+        <hint/>
+        <label>Table Name</label>
+        <language>en</language>
+        <name>var__m_sys_hub_flow_input_fc28c682539cb610db6151a0a0490ec1</name>
+        <plural/>
+        <sys_class_name>sys_documentation</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 18:19:29</sys_created_on>
+        <sys_id>3c28c682539cb610db6151a0a0490eda</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name/>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 18:19:29</sys_updated_on>
+        <url/>
+        <url_target/>
+    </sys_documentation>
+    <sys_choice action="delete_multiple" query="name=var__m_sys_hub_flow_input_fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_choice action="delete_multiple" query="name=var__m_sys_hub_flow_output_fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_flow_trigger_plan action="delete_multiple" query="plan_id=fc28c682539cb610db6151a0a0490ec1"/>
+    <sys_flow_subflow_plan action="delete_multiple" query="plan_id=fc28c682539cb610db6151a0a0490ec1"/>
+</record_update>

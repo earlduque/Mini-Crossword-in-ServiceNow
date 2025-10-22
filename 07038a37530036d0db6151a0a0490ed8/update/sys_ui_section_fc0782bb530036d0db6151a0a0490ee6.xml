@@ -4,13 +4,83 @@
             <element>number</element>
             <position>0</position>
             <sys_created_by>admin</sys_created_by>
-            <sys_created_on>2025-09-24 18:28:14</sys_created_on>
-            <sys_id>700782bb530036d0db6151a0a0490eea</sys_id>
+            <sys_created_on>2025-10-01 18:43:01</sys_created_on>
+            <sys_id>bd8d8a4a539cb610db6151a0a0490ef5</sys_id>
             <sys_mod_count>0</sys_mod_count>
             <sys_ui_formatter/>
             <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_puzzle_grid" sys_domain="global" view="Default view">fc0782bb530036d0db6151a0a0490ee6</sys_ui_section>
             <sys_updated_by>admin</sys_updated_by>
-            <sys_updated_on>2025-09-24 18:28:14</sys_updated_on>
+            <sys_updated_on>2025-10-01 18:43:01</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>daily_puzzle</element>
+            <position>1</position>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-10-01 18:43:01</sys_created_on>
+            <sys_id>b58d8a4a539cb610db6151a0a0490ef6</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_puzzle_grid" sys_domain="global" view="Default view">fc0782bb530036d0db6151a0a0490ee6</sys_ui_section>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-10-01 18:43:01</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>word</element>
+            <position>2</position>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-10-01 18:43:01</sys_created_on>
+            <sys_id>bd8d8a4a539cb610db6151a0a0490ef6</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_puzzle_grid" sys_domain="global" view="Default view">fc0782bb530036d0db6151a0a0490ee6</sys_ui_section>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-10-01 18:43:01</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>row</element>
+            <position>3</position>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-10-01 18:43:01</sys_created_on>
+            <sys_id>b58d8a4a539cb610db6151a0a0490ef7</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_puzzle_grid" sys_domain="global" view="Default view">fc0782bb530036d0db6151a0a0490ee6</sys_ui_section>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-10-01 18:43:01</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>column</element>
+            <position>4</position>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-10-01 18:43:01</sys_created_on>
+            <sys_id>bd8d8a4a539cb610db6151a0a0490ef7</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_puzzle_grid" sys_domain="global" view="Default view">fc0782bb530036d0db6151a0a0490ee6</sys_ui_section>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-10-01 18:43:01</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>direction</element>
+            <position>5</position>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-10-01 18:43:01</sys_created_on>
+            <sys_id>b58d8a4a539cb610db6151a0a0490ef8</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="NULL" display_value="" name="x_1468549_mini_c_0_puzzle_grid" sys_domain="global" view="Default view">fc0782bb530036d0db6151a0a0490ee6</sys_ui_section>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-10-01 18:43:01</sys_updated_on>
             <sys_user/>
             <type/>
         </sys_ui_element>

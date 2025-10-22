@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_row">
+    <sp_row action="DELETE">
+        <class_name/>
+        <order>1</order>
+        <semantic_tag/>
+        <sp_column/>
+        <sp_container display_value="konami - Test Page - Container 1">9bdc9cf553dc3610db6151a0a0490e81</sp_container>
+        <sys_class_name>sp_row</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-09-30 15:52:18</sys_created_on>
+        <sys_id>5bdc9cf553dc3610db6151a0a0490e84</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>1</sys_name>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name>sp_row_5bdc9cf553dc3610db6151a0a0490e84</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-09-30 15:52:18</sys_updated_on>
+    </sp_row>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</application>
+        <file_path/>
+        <instance_id>1cd6e4481b9ace94c8432f8dee4bcbce</instance_id>
+        <instance_name>dev271501</instance_name>
+        <name>sp_row_5bdc9cf553dc3610db6151a0a0490e84</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_row"><sp_row action="INSERT_OR_UPDATE"><class_name/><order>1</order><semantic_tag/><sp_column/><sp_container display_value="konami - Test Page - Container 1">9bdc9cf553dc3610db6151a0a0490e81</sp_container><sys_class_name>sp_row</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2025-09-30 15:52:18</sys_created_on><sys_id>5bdc9cf553dc3610db6151a0a0490e84</sys_id><sys_mod_count>0</sys_mod_count><sys_name>1</sys_name><sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package><sys_policy/><sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope><sys_update_name>sp_row_5bdc9cf553dc3610db6151a0a0490e84</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2025-09-30 15:52:18</sys_updated_on></sp_row></record_update>]]></payload>
+        <payload_hash>1500856791</payload_hash>
+        <record_name>1</record_name>
+        <reverted_from/>
+        <source>23df880153507210db6151a0a0490e3e</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-09-30 15:52:18</sys_created_on>
+        <sys_id>d3dc9cf553dc3610db6151a0a0490e93</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>1999b5319620000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-09-30 15:52:18</sys_updated_on>
+        <type>Row</type>
+        <update_guid>5bdc9cf5b0dc3610057c9806ae94c392</update_guid>
+        <update_guid_history>5bdc9cf5b0dc3610057c9806ae94c392:1500856791</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="1">5a31c24a535cb610db6151a0a0490eda</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-01 17:49:16</sys_created_on>
+        <sys_db_object display_value="" name="sp_row">sp_row</sys_db_object>
+        <sys_id>29d0a2b1edeb4647b28d73e0182adf01</sys_id>
+        <sys_metadata>5bdc9cf553dc3610db6151a0a0490e84</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>1</sys_name>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_scope_delete display_value="">04424be1367248f187f69b7b558d9819</sys_scope_delete>
+        <sys_update_name>sp_row_5bdc9cf553dc3610db6151a0a0490e84</sys_update_name>
+        <sys_update_version display_value="sp_row_5bdc9cf553dc3610db6151a0a0490e84">d3dc9cf553dc3610db6151a0a0490e93</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-01 17:49:16</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

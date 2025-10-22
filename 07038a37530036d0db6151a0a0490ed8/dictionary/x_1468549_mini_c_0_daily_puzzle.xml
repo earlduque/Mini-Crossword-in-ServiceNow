@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="3f2482b7530036d0db6151a0a0490ed0" label="Puzzle" max_length="40" name="x_1468549_mini_c_0_daily_puzzle" type="collection">
         <element attributes="edge_encryption_enabled=true" default="javascript:global.getNextObjNumberPadded();" display="true" label="Number" max_length="40" name="number" type="string"/>
+        <element label="Category" max_length="32" name="category" reference="x_1468549_mini_c_0_word_category" type="reference"/>
         <element label="Date" max_length="40" name="date" type="glide_date"/>
         <element choice="1" label="Type" mandatory="true" max_length="40" name="type" type="choice">
             <choice>
@@ -8,5 +9,8 @@
                 <element inactive_on_update="false" label="Daily" sequence="0" value="daily"/>
             </choice>
         </element>
+        <index name="index">
+            <element name="category"/>
+        </index>
     </element>
 </database>
