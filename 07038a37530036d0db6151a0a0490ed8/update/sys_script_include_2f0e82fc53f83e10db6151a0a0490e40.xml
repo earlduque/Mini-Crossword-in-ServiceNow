@@ -13,7 +13,7 @@
 MiniCrossword.prototype = {
     initialize: function() {
         this.GRID_SIZE = 5;
-        this.MIN_WORD_COUNT = 5;
+        this.MIN_WORD_COUNT = 3; // Lowered from 5 to accommodate smaller word pools
         this.MAX_ATTEMPTS = 1000;
         this.MAX_RETRIES = 10;
     },
