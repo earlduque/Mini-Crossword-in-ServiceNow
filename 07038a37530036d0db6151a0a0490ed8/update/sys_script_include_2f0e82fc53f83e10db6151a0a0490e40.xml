@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_1468549_mini_c_0.MiniCrossword</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <mobile_callable>false</mobile_callable>
+        <name>MiniCrossword</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var MiniCrossword = Class.create();
+MiniCrossword.prototype = {
+    initialize: function() {
+    },
+
+    type: 'MiniCrossword'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-10-22 18:04:58</sys_created_on>
+        <sys_id>2f0e82fc53f83e10db6151a0a0490e40</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>MiniCrossword</sys_name>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name>sys_script_include_2f0e82fc53f83e10db6151a0a0490e40</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-10-22 18:04:58</sys_updated_on>
+    </sys_script_include>
+</record_update>
