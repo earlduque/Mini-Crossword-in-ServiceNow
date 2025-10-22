@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd comprehensive README documentation\n\nAdded detailed README.md to repository root describing:\n- Application overview and NYT Mini Crossword-inspired features\n- Complete table structure documentation (8 core tables)\n- Data model relationships and architecture\n- Development roadmap and current status\n- Installation and usage instructions\n- Technical details and contribution guidelines\n\nThis documentation provides a clear understanding of the Mini Crossword application''s database schema, planned Service Portal widget, and how puzzles are constructed and played.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git config:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
