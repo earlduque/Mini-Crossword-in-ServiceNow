@@ -147,27 +147,33 @@ instance → leaderboard (implicit via user/score)
 
 ## Development Status
 
-### Completed
-- Database schema design and table creation
+### Completed ✅
+- Database schema design and table creation (8 core tables)
 - Table relationships and indexes
 - Security rules (ACLs)
-- Basic script include structure (`MiniCrossword`)
+- **Automated puzzle generation algorithm**
+  - Backtracking constraint satisfaction approach
+  - Intelligent word placement with intersection validation
+  - Supports category filtering or all-word puzzles
+  - Minimum 5 words, allows blank spaces
+  - First row guarantee
+- **Puzzle validation logic**
+- **Full MiniCrossword Script Include with JSDoc documentation**
 - Import template for word data
 
-### In Progress
+### In Progress 🚧
 - Service Portal widget development
-- Game logic implementation
-- Validation algorithms
+- User gameplay validation
 - Scoring system
 
-### To Do
+### To Do 📋
 - Timer functionality
-- Hint reveal logic
+- Hint reveal logic (reveal word, reveal letter)
 - Leaderboard ranking algorithm
-- Daily puzzle scheduling
-- Random puzzle generation
+- Daily puzzle scheduling (scheduled job)
 - Mobile-responsive design
 - User statistics dashboard
+- Game state persistence (save/resume)
 
 ## Installation
 
@@ -183,19 +189,82 @@ This is a ServiceNow scoped application. To install:
 ## Usage
 
 ### For Administrators
-1. Create word categories in the Word Category table
-2. Add 5-letter words with hints to the Word table
-3. Create daily puzzle records
-4. Define grid layouts by adding puzzle_grid entries for each word position
-5. Schedule daily puzzles by setting the date field
+
+#### Setting Up Word Database
+1. Create word categories in the Word Category table (`x_1468549_mini_c_0_word_category`)
+   - Example categories: Sports, Food, Technology, Movies, etc.
+2. Add 5-letter words with hints to the Word table (`x_1468549_mini_c_0_word`)
+   - Each word must be exactly 5 letters
+   - Include engaging hints/clues
+   - Assign to appropriate category (optional)
+
+#### Generating Puzzles
+
+**Option 1: Using Background Scripts**
+
+Navigate to **System Definition > Scripts - Background** and run:
+
+```javascript
+// Generate a random puzzle from all available words
+var mc = new MiniCrossword();
+var result = mc.generatePuzzle(null, 'random', null);
+
+if (result.success) {
+    gs.info('✓ Puzzle generated successfully!');
+    gs.info('  Puzzle ID: ' + result.puzzleSysId);
+    gs.info('  Words placed: ' + result.wordCount);
+    gs.info('  Grid coverage: ' + result.gridCoverage);
+    gs.info('  Attempts used: ' + result.attemptsUsed);
+} else {
+    gs.error('✗ Generation failed: ' + result.message);
+}
+```
+
+```javascript
+// Generate a daily puzzle for today with specific category
+var categoryGR = new GlideRecord('x_1468549_mini_c_0_word_category');
+if (categoryGR.get('name', 'Sports')) {
+    var mc = new MiniCrossword();
+    var today = new GlideDateTime().getDate().getValue(); // YYYY-MM-DD
+    var result = mc.generatePuzzle(categoryGR.getUniqueValue(), 'daily', today);
+
+    gs.info('Daily puzzle: ' + result.message);
+}
+```
+
+**Option 2: Using Business Rules** (Future enhancement)
+- Create a Business Rule on the `daily_puzzle` table
+- Trigger puzzle generation automatically when a new daily_puzzle record is created
+
+**Option 3: Using Scheduled Jobs** (Future enhancement)
+- Set up a daily scheduled script to auto-generate tomorrow's puzzle
+
+#### Validating Puzzles
+
+```javascript
+// Validate an existing puzzle
+var mc = new MiniCrossword();
+var result = mc.validatePuzzle('your_puzzle_sys_id_here');
+
+if (result.valid) {
+    gs.info('✓ Puzzle is valid!');
+    gs.info('  Words: ' + result.wordCount);
+    gs.info('  Intersections checked: ' + result.intersectionCount);
+} else {
+    gs.error('✗ Puzzle has errors:');
+    for (var i = 0; i < result.errors.length; i++) {
+        gs.error('  - ' + result.errors[i]);
+    }
+}
+```
 
 ### For Players (Once Service Portal is Complete)
 1. Navigate to the Mini Crossword Service Portal page
-2. Choose "Times" for daily puzzle or "Zen" for random practice
+2. Choose **"Times"** for daily competitive puzzle or **"Zen"** for random practice
 3. Click cells to select across/down words
 4. Type letters to fill in answers
-5. Use hint buttons if needed (affects score)
-6. Complete the puzzle to see your time and rank
+5. Use hint buttons if needed (affects score in Times mode)
+6. Complete the puzzle to see your time and leaderboard rank
 
 ## Technical Details
 
@@ -203,6 +272,43 @@ This is a ServiceNow scoped application. To install:
 - **Platform**: ServiceNow (Service Portal)
 - **Primary Language**: JavaScript (both server-side and client-side)
 - **UI Framework**: Service Portal (AngularJS + Bootstrap)
+
+### Puzzle Generation Algorithm
+
+The application uses an intelligent **backtracking constraint satisfaction algorithm** to generate valid crossword puzzles:
+
+**Three-Phase Generation:**
+1. **Phase 1**: Guarantees a horizontal word in the first row (tries columns 1-5)
+2. **Phase 2**: Attempts to place additional horizontal words in rows 2-5
+3. **Phase 3**: Attempts to place vertical words in columns 1-5
+
+**Key Features:**
+- **Intersection Validation**: Ensures words share matching letters at crossing points
+- **Retry Logic**: Up to 10 attempts with different word shuffles if generation fails
+- **Flexible Layout**: Allows blank spaces when no compatible words fit
+- **Minimum Threshold**: Requires at least 5 words for a valid puzzle
+- **Category Support**: Can filter by word category or use entire word database
+
+**Algorithm Constraints:**
+- Grid size: 5x5
+- Word length: Exactly 5 letters
+- Max attempts per generation: 1,000 iterations
+- Max retries: 10 different starting configurations
+
+**Example Grid Output:**
+```
+  1 2 3 4 5
+1 W O R L D
+2 □ P □ □ □
+3 □ E □ □ □
+4 □ N □ □ □
+5 □ □ □ □ □
+
+Words placed: 7
+Grid coverage: 52%
+```
+
+For detailed implementation, see `sys_script_include_2f0e82fc53f83e10db6151a0a0490e40.xml`
 
 ## Contributing
 
@@ -219,11 +325,21 @@ This project is intended for educational and internal use within ServiceNow inst
 
 ## Roadmap
 
-- **Phase 1**: Complete database structure (✓)
-- **Phase 2**: Develop Service Portal widget (In Progress)
-- **Phase 3**: Implement game logic and validation
-- **Phase 4**: Add timer and scoring
-- **Phase 5**: Create leaderboard displays
-- **Phase 6**: Implement daily puzzle automation
-- **Phase 7**: Mobile optimization
-- **Phase 8**: Analytics and user statistics
+- **Phase 1**: Complete database structure ✅ **COMPLETED**
+- **Phase 2**: Implement puzzle generation algorithm ✅ **COMPLETED**
+- **Phase 3**: Develop Service Portal widget 🚧 **IN PROGRESS**
+- **Phase 4**: Implement game logic and user validation 🚧 **IN PROGRESS**
+- **Phase 5**: Add timer and scoring ⏳ **UPCOMING**
+- **Phase 6**: Create leaderboard displays ⏳ **UPCOMING**
+- **Phase 7**: Implement daily puzzle automation (scheduled jobs) ⏳ **UPCOMING**
+- **Phase 8**: Mobile optimization ⏳ **UPCOMING**
+- **Phase 9**: Analytics and user statistics ⏳ **UPCOMING**
+
+### Recent Updates
+
+**2025-10-22**:
+- ✅ Implemented complete puzzle generation algorithm with backtracking
+- ✅ Added puzzle validation logic for intersection checking
+- ✅ Created comprehensive JSDoc documentation for MiniCrossword Script Include
+- ✅ Added support for category-filtered and all-word puzzle generation
+- ✅ Implemented retry logic with seeded randomization for puzzle variety

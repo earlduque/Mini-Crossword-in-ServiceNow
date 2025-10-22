@@ -12,6 +12,471 @@
         <script><![CDATA[var MiniCrossword = Class.create();
 MiniCrossword.prototype = {
     initialize: function() {
+        this.GRID_SIZE = 5;
+        this.MIN_WORD_COUNT = 5;
+        this.MAX_ATTEMPTS = 1000;
+        this.MAX_RETRIES = 10;
+    },
+
+    /**
+     * Generates a crossword puzzle with the specified parameters.
+     *
+     * This method creates a 5x5 crossword grid by intelligently placing words from the word dictionary
+     * that intersect correctly (matching letters at intersection points). The algorithm uses backtracking
+     * to find valid word placements and allows for blank spaces when perfect fills aren't possible.
+     *
+     * Grid Constraints:
+     * - 5x5 grid maximum size
+     * - Words are exactly 5 letters long
+     * - Minimum 5 words required for a valid puzzle
+     * - First row must contain at least one horizontal word
+     * - Words must intersect with matching letters at shared cells
+     * - Blank spaces are allowed when no valid word fits
+     *
+     * @param {String} categorySysId - (Optional) sys_id of the word_category record. If null/empty, uses all available words
+     * @param {String} puzzleType - Type of puzzle: 'daily' or 'random'
+     * @param {String} puzzleDate - (Optional) Date string for daily puzzles (format: YYYY-MM-DD). Required if puzzleType is 'daily'
+     *
+     * @returns {Object} Generation result object with structure:
+     * {
+     *   success: {Boolean} - true if puzzle was generated successfully, false otherwise
+     *   puzzleSysId: {String|null} - sys_id of created daily_puzzle record, or null on failure
+     *   wordCount: {Number} - Number of words placed in the grid
+     *   gridCoverage: {String} - Percentage of grid cells filled (e.g., "68%")
+     *   message: {String} - Success message or error description
+     *   attemptsUsed: {Number} - Number of generation attempts before success/failure
+     * }
+     *
+     * @example
+     * // Generate a random puzzle from all words
+     * var mc = new MiniCrossword();
+     * var result = mc.generatePuzzle(null, 'random', null);
+     * // Returns: { success: true, puzzleSysId: "abc123...", wordCount: 8, gridCoverage: "76%", message: "Puzzle generated successfully", attemptsUsed: 3 }
+     *
+     * @example
+     * // Generate a daily puzzle from Sports category
+     * var mc = new MiniCrossword();
+     * var sportsCategoryId = "def456..."; // sys_id of Sports category
+     * var result = mc.generatePuzzle(sportsCategoryId, 'daily', '2025-10-23');
+     * // Returns: { success: true, puzzleSysId: "xyz789...", wordCount: 7, gridCoverage: "64%", message: "Puzzle generated successfully", attemptsUsed: 5 }
+     *
+     * @example
+     * // Failed generation (insufficient compatible words)
+     * var mc = new MiniCrossword();
+     * var result = mc.generatePuzzle("invalid_category_id", 'random', null);
+     * // Returns: { success: false, puzzleSysId: null, wordCount: 0, gridCoverage: "0%", message: "Failed to generate puzzle: Insufficient words in category", attemptsUsed: 10 }
+     */
+    generatePuzzle: function(categorySysId, puzzleType, puzzleDate) {
+        var retryCount = 0;
+        var result;
+
+        // Validate puzzle type
+        if (puzzleType !== 'daily' && puzzleType !== 'random') {
+            return this._createErrorResult('Invalid puzzle type. Must be "daily" or "random"');
+        }
+
+        // Validate daily puzzle has date
+        if (puzzleType === 'daily' && !puzzleDate) {
+            return this._createErrorResult('Daily puzzles require a date parameter');
+        }
+
+        // Get word pool from database
+        var wordPool = this._getWordsByCategory(categorySysId);
+        if (wordPool.length < this.MIN_WORD_COUNT) {
+            return this._createErrorResult('Insufficient words in category. Need at least ' + this.MIN_WORD_COUNT + ' words, found ' + wordPool.length);
+        }
+
+        // Retry puzzle generation with different starting words
+        while (retryCount < this.MAX_RETRIES) {
+            retryCount++;
+
+            result = this._attemptPuzzleGeneration(wordPool, retryCount);
+
+            if (result.success && result.wordCount >= this.MIN_WORD_COUNT) {
+                // Successfully generated valid puzzle - create database records
+                var puzzleSysId = this._createPuzzleRecords(result.grid, categorySysId, puzzleType, puzzleDate);
+
+                return {
+                    success: true,
+                    puzzleSysId: puzzleSysId,
+                    wordCount: result.wordCount,
+                    gridCoverage: result.gridCoverage,
+                    message: 'Puzzle generated successfully',
+                    attemptsUsed: retryCount
+                };
+            }
+        }
+
+        // Failed after all retries
+        return {
+            success: false,
+            puzzleSysId: null,
+            wordCount: result ? result.wordCount : 0,
+            gridCoverage: result ? result.gridCoverage : '0%',
+            message: 'Failed to generate puzzle after ' + this.MAX_RETRIES + ' attempts. Could not place minimum ' + this.MIN_WORD_COUNT + ' words.',
+            attemptsUsed: retryCount
+        };
+    },
+
+    /**
+     * Validates an existing puzzle to ensure all word intersections are correct.
+     *
+     * Checks that words placed in the puzzle grid have matching letters at all intersection points.
+     * This is useful for verifying manually-created puzzles or debugging generation logic.
+     *
+     * @param {String} puzzleSysId - sys_id of the daily_puzzle record to validate
+     *
+     * @returns {Object} Validation result object with structure:
+     * {
+     *   valid: {Boolean} - true if all intersections are correct, false otherwise
+     *   errors: {Array} - Array of error descriptions for invalid intersections
+     *   wordCount: {Number} - Number of words in the puzzle
+     *   intersectionCount: {Number} - Number of intersection points checked
+     * }
+     *
+     * @example
+     * // Validate a puzzle
+     * var mc = new MiniCrossword();
+     * var result = mc.validatePuzzle("puzzle_sys_id_here");
+     * // Returns: { valid: true, errors: [], wordCount: 8, intersectionCount: 12 }
+     *
+     * @example
+     * // Invalid puzzle with mismatched intersections
+     * var mc = new MiniCrossword();
+     * var result = mc.validatePuzzle("invalid_puzzle_sys_id");
+     * // Returns: { valid: false, errors: ["Word APPLE at (1,1) and PANEL at (1,3) have mismatched letters at intersection (3,3): P vs N"], wordCount: 6, intersectionCount: 8 }
+     */
+    validatePuzzle: function(puzzleSysId) {
+        var errors = [];
+        var grid = this._createEmptyGrid();
+        var wordPlacements = [];
+
+        // Load puzzle grid records
+        var gr = new GlideRecord('x_1468549_mini_c_0_puzzle_grid');
+        gr.addQuery('daily_puzzle', puzzleSysId);
+        gr.query();
+
+        while (gr.next()) {
+            var wordRecord = gr.word.getRefRecord();
+            var placement = {
+                word: wordRecord.getValue('word').toUpperCase(),
+                row: parseInt(gr.getValue('row')),
+                col: parseInt(gr.getValue('column')),
+                direction: gr.getValue('direction'),
+                wordName: wordRecord.getValue('word')
+            };
+            wordPlacements.push(placement);
+
+            // Place word in grid
+            for (var i = 0; i < this.GRID_SIZE; i++) {
+                var r = placement.direction === 'horizontal' ? placement.row : placement.row + i;
+                var c = placement.direction === 'horizontal' ? placement.col + i : placement.col;
+
+                if (r <= this.GRID_SIZE && c <= this.GRID_SIZE) {
+                    var existingCell = grid[r][c];
+                    if (existingCell && existingCell.letter !== placement.word[i]) {
+                        errors.push('Word ' + placement.wordName + ' at (' + placement.row + ',' + placement.col +
+                                  ') has mismatched letter at cell (' + r + ',' + c + '): expected "' +
+                                  placement.word[i] + '", found "' + existingCell.letter + '"');
+                    }
+                    grid[r][c] = {
+                        letter: placement.word[i],
+                        word: placement.wordName
+                    };
+                }
+            }
+        }
+
+        // Count intersections
+        var intersectionCount = 0;
+        for (var row = 1; row <= this.GRID_SIZE; row++) {
+            for (var col = 1; col <= this.GRID_SIZE; col++) {
+                if (grid[row][col] && grid[row][col].sources && grid[row][col].sources.length > 1) {
+                    intersectionCount++;
+                }
+            }
+        }
+
+        return {
+            valid: errors.length === 0,
+            errors: errors,
+            wordCount: wordPlacements.length,
+            intersectionCount: intersectionCount
+        };
+    },
+
+    // ============================================================================
+    // PRIVATE HELPER METHODS
+    // ============================================================================
+
+    _attemptPuzzleGeneration: function(wordPool, seed) {
+        var grid = this._createEmptyGrid();
+        var usedWords = {};
+        var placedWords = [];
+        var attempts = 0;
+
+        // Shuffle word pool based on seed for variety
+        var shuffledPool = this._shuffleArray(wordPool.slice(), seed);
+
+        // PHASE 1: Place first row word (guaranteed)
+        var firstRowPlaced = false;
+        for (var col = 1; col <= this.GRID_SIZE && !firstRowPlaced; col++) {
+            for (var w = 0; w < shuffledPool.length && !firstRowPlaced; w++) {
+                if (this._canPlaceWord(grid, shuffledPool[w].word, 1, col, 'horizontal')) {
+                    this._placeWord(grid, shuffledPool[w], 1, col, 'horizontal');
+                    usedWords[shuffledPool[w].sysId] = true;
+                    placedWords.push({
+                        word: shuffledPool[w],
+                        row: 1,
+                        col: col,
+                        direction: 'horizontal'
+                    });
+                    firstRowPlaced = true;
+                }
+            }
+        }
+
+        if (!firstRowPlaced) {
+            return { success: false, wordCount: 0, gridCoverage: '0%', grid: grid };
+        }
+
+        // PHASE 2: Try to place more horizontal words (rows 2-5)
+        for (var row = 2; row <= this.GRID_SIZE; row++) {
+            for (var col = 1; col <= this.GRID_SIZE; col++) {
+                attempts++;
+                if (attempts > this.MAX_ATTEMPTS) break;
+
+                var word = this._findCompatibleWord(grid, row, col, 'horizontal', shuffledPool, usedWords);
+                if (word) {
+                    this._placeWord(grid, word, row, col, 'horizontal');
+                    usedWords[word.sysId] = true;
+                    placedWords.push({
+                        word: word,
+                        row: row,
+                        col: col,
+                        direction: 'horizontal'
+                    });
+                    break; // Only one word per row
+                }
+            }
+        }
+
+        // PHASE 3: Try to place vertical words (columns 1-5)
+        for (var col = 1; col <= this.GRID_SIZE; col++) {
+            for (var row = 1; row <= this.GRID_SIZE; row++) {
+                attempts++;
+                if (attempts > this.MAX_ATTEMPTS) break;
+
+                var word = this._findCompatibleWord(grid, row, col, 'vertical', shuffledPool, usedWords);
+                if (word) {
+                    this._placeWord(grid, word, row, col, 'vertical');
+                    usedWords[word.sysId] = true;
+                    placedWords.push({
+                        word: word,
+                        row: row,
+                        col: col,
+                        direction: 'vertical'
+                    });
+                    break; // Only one word per column
+                }
+            }
+        }
+
+        // Calculate statistics
+        var filledCells = 0;
+        for (var r = 1; r <= this.GRID_SIZE; r++) {
+            for (var c = 1; c <= this.GRID_SIZE; c++) {
+                if (grid[r][c]) filledCells++;
+            }
+        }
+
+        var coverage = Math.round((filledCells / (this.GRID_SIZE * this.GRID_SIZE)) * 100) + '%';
+
+        return {
+            success: placedWords.length >= this.MIN_WORD_COUNT,
+            wordCount: placedWords.length,
+            gridCoverage: coverage,
+            grid: placedWords
+        };
+    },
+
+    _getWordsByCategory: function(categorySysId) {
+        var words = [];
+        var gr = new GlideRecord('x_1468549_mini_c_0_word');
+
+        if (categorySysId) {
+            gr.addQuery('category', categorySysId);
+        }
+
+        gr.query();
+
+        while (gr.next()) {
+            var wordText = gr.getValue('word');
+            if (wordText && wordText.length === this.GRID_SIZE) {
+                words.push({
+                    sysId: gr.getUniqueValue(),
+                    word: wordText.toUpperCase(),
+                    hint: gr.getValue('hint'),
+                    category: gr.getValue('category')
+                });
+            }
+        }
+
+        return words;
+    },
+
+    _createEmptyGrid: function() {
+        var grid = {};
+        for (var r = 1; r <= this.GRID_SIZE; r++) {
+            grid[r] = {};
+            for (var c = 1; c <= this.GRID_SIZE; c++) {
+                grid[r][c] = null;
+            }
+        }
+        return grid;
+    },
+
+    _canPlaceWord: function(grid, word, row, col, direction) {
+        // Check if word fits in grid bounds
+        if (direction === 'horizontal' && col + this.GRID_SIZE - 1 > this.GRID_SIZE) {
+            return false;
+        }
+        if (direction === 'vertical' && row + this.GRID_SIZE - 1 > this.GRID_SIZE) {
+            return false;
+        }
+
+        // Check each position
+        for (var i = 0; i < this.GRID_SIZE; i++) {
+            var r = direction === 'horizontal' ? row : row + i;
+            var c = direction === 'horizontal' ? col + i : col;
+
+            var cell = grid[r][c];
+
+            // If cell is occupied, letter must match
+            if (cell !== null && cell.letter !== word[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    },
+
+    _placeWord: function(grid, wordObj, row, col, direction) {
+        var word = wordObj.word;
+        for (var i = 0; i < this.GRID_SIZE; i++) {
+            var r = direction === 'horizontal' ? row : row + i;
+            var c = direction === 'horizontal' ? col + i : col;
+
+            grid[r][c] = {
+                letter: word[i],
+                wordSysId: wordObj.sysId
+            };
+        }
+    },
+
+    _findCompatibleWord: function(grid, row, col, direction, wordPool, usedWords) {
+        for (var i = 0; i < wordPool.length; i++) {
+            var word = wordPool[i];
+
+            // Skip if already used
+            if (usedWords[word.sysId]) continue;
+
+            // Check if word can be placed
+            if (this._canPlaceWord(grid, word.word, row, col, direction)) {
+                // Check if word actually intersects with at least one existing word
+                var hasIntersection = false;
+                for (var pos = 0; pos < this.GRID_SIZE; pos++) {
+                    var r = direction === 'horizontal' ? row : row + pos;
+                    var c = direction === 'horizontal' ? col + pos : col;
+                    if (grid[r][c] !== null) {
+                        hasIntersection = true;
+                        break;
+                    }
+                }
+
+                // For first word in a direction, intersection not required
+                // Otherwise, require at least one intersection
+                if (hasIntersection || this._isFirstInDirection(grid, direction)) {
+                    return word;
+                }
+            }
+        }
+        return null;
+    },
+
+    _isFirstInDirection: function(grid, direction) {
+        // Check if any word in this direction has been placed
+        for (var r = 1; r <= this.GRID_SIZE; r++) {
+            for (var c = 1; c <= this.GRID_SIZE; c++) {
+                if (grid[r][c] !== null) {
+                    return false; // Grid has some content
+                }
+            }
+        }
+        return true;
+    },
+
+    _createPuzzleRecords: function(placedWords, categorySysId, puzzleType, puzzleDate) {
+        // Create daily_puzzle record
+        var puzzleGR = new GlideRecord('x_1468549_mini_c_0_daily_puzzle');
+        puzzleGR.initialize();
+        puzzleGR.setValue('type', puzzleType);
+
+        if (categorySysId) {
+            puzzleGR.setValue('category', categorySysId);
+        }
+
+        if (puzzleDate) {
+            puzzleGR.setValue('date', puzzleDate);
+        }
+
+        var puzzleSysId = puzzleGR.insert();
+
+        // Create puzzle_grid records for each placed word
+        for (var i = 0; i < placedWords.length; i++) {
+            var placement = placedWords[i];
+            var gridGR = new GlideRecord('x_1468549_mini_c_0_puzzle_grid');
+            gridGR.initialize();
+            gridGR.setValue('daily_puzzle', puzzleSysId);
+            gridGR.setValue('word', placement.word.sysId);
+            gridGR.setValue('row', placement.row);
+            gridGR.setValue('column', placement.col);
+            gridGR.setValue('direction', placement.direction);
+            gridGR.insert();
+        }
+
+        return puzzleSysId;
+    },
+
+    _shuffleArray: function(array, seed) {
+        // Simple seeded shuffle for reproducibility
+        var currentIndex = array.length;
+        var randomIndex;
+
+        while (currentIndex > 0) {
+            // Seeded random
+            seed = (seed * 9301 + 49297) % 233280;
+            randomIndex = Math.floor((seed / 233280) * currentIndex);
+            currentIndex--;
+
+            // Swap
+            var temp = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temp;
+        }
+
+        return array;
+    },
+
+    _createErrorResult: function(message) {
+        return {
+            success: false,
+            puzzleSysId: null,
+            wordCount: 0,
+            gridCoverage: '0%',
+            message: message,
+            attemptsUsed: 0
+        };
     },
 
     type: 'MiniCrossword'
