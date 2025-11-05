@@ -13,7 +13,8 @@
 	// Select puzzle and reload widget with puzzle data
 	c.selectPuzzle = function() {
 		if (c.selectedPuzzle) {
-			c.server.update().then(function() {
+			// Pass puzzle_id to server via input parameter
+			c.server.get({puzzle_id: c.selectedPuzzle}).then(function() {
 				initializeGrid();
 			});
 		}
@@ -198,10 +199,11 @@
 		return (row - 1) * 5 + (col - 1);
 	};
 
-	// Server data handling
-	c.server.get({puzzle_id: c.data.selectedPuzzleId}).then(function() {
+	// Initialize on load if a puzzle is already selected
+	if (c.data.selectedPuzzleId) {
+		c.selectedPuzzle = c.data.selectedPuzzleId;
 		initializeGrid();
-	});
+	}
 };]]></client_script>
         <controller_as>c</controller_as>
         <css><![CDATA[.mini-crossword-container {
