@@ -1,0 +1,380 @@
+You are building the following application. If any detail is missing, choose sensible defaults and proceed, then document what you assumed.
+
+## Goal
+- Primary objective: Build an interactive Mini Crossword puzzle game playable within ServiceNow that automatically generates solvable 5x5 crossword grids from a word dictionary
+- Success criteria:
+  1. Users can click into any white grid cell and type letters
+  2. Keyboard navigation works (arrows, backspace) to move between cells
+  3. Real-time validation shows green for correct letters, red for incorrect
+  4. Puzzle displays "Congratulations" message upon completion
+  5. Clues organized by Across/Down with hints/definitions visible
+  6. Puzzle generator creates valid crosswords where all word intersections have matching letters
+
+## Audience
+- Users: General ServiceNow users who want to play casual puzzle games
+- Skill level: Novice - users should be able to click and type without training
+- Usage pattern: Ad-hoc casual gameplay sessions, desktop and mobile devices
+
+## App Identity
+- App name: Mini Crossword
+- Data classification: Internal
+- Theming: Classic crossword puzzle aesthetic - black and white grid, clean borders, traditional newspaper puzzle vibe
+
+## What the App Must Do
+
+### Core Capabilities
+
+1. **Auto-generate valid 5x5 crossword puzzles** from a word dictionary with these constraints:
+   - Words can be 2-5 letters long (variable length support)
+   - Minimum 3 words required per puzzle
+   - First row must contain at least one horizontal word
+   - Words must intersect with matching letters at shared cells
+   - CRITICAL: ALL horizontal and vertical letter sequences in the grid must form valid dictionary words (no invalid "cross-words")
+   - Blank (black) spaces allowed when no valid word fits
+   - ALL valid words including those formed by intersections must be identified and recorded
+   - Random puzzles use timestamp-based randomization for uniqueness
+   - Daily puzzles use date-based seeding for consistency
+
+2. **Display interactive 5x5 crossword grid** with:
+   - White squares for letter entry
+   - Black squares for blank spaces
+   - Yellow highlight on active/selected cell
+   - Green background for correct letters
+   - Red background for incorrect letters
+   - Cell borders creating classic crossword appearance
+
+3. **Accept user input** with full keyboard navigation:
+   - Click any white cell to select it
+   - Type A-Z letters (automatically converted to uppercase)
+   - Backspace deletes current letter and moves to previous cell
+   - Arrow keys navigate up/down/left/right through grid
+   - Auto-skip over black (blank) cells during navigation
+   - Auto-advance to next cell after typing a letter
+
+4. **Validate answers in real-time** by:
+   - Comparing each typed letter against the correct answer
+   - Immediately showing green (correct) or red (incorrect) feedback
+   - Checking puzzle completion when all cells are correct
+   - Displaying success message when puzzle is solved
+
+5. **Show organized clues** in two columns:
+   - Across clues (left column) - all horizontal words
+   - Down clues (right column) - all vertical words
+   - Each clue numbered sequentially (1, 2, 3, etc.)
+   - Position indicators showing "Row X, Col Y" for starting position
+   - Hint/definition text from word dictionary
+
+6. **Auto-load puzzle on page load** - when user opens the page, a random puzzle is automatically selected and displayed
+
+7. **Store word dictionary** with categorization:
+   - Words (2-5 letters)
+   - Hints (short clues)
+   - Definitions (full explanations used as puzzle clues)
+   - Categories for themed puzzles (Sports, Food, etc.)
+
+8. **Support both puzzle types**:
+   - Daily puzzles: Generated once per day, consistent for that date
+   - Random puzzles: Unique each time, timestamp-based randomization
+
+### Reporting Needs
+None - this is a casual game application
+
+### SLAs or Service Targets
+- Puzzle generation should complete within 10 seconds
+- Grid should be responsive and update within 100ms of user input
+
+## Data Model (Tables, fields, relationships)
+
+Create the following tables with dictionary attributes, reference integrity, choice lists, and indexes.
+
+### [TABLE 1] Word Dictionary
+- Table label and name: Word, x_1468549_mini_c_0_word
+- Extends: none (standard ServiceNow table base)
+- Purpose: Store all words available for puzzle generation
+- Fields:
+  - number (string, max 40, auto-generated, encrypted) - Record identifier
+  - word (string, max 5, required, display=true) - The actual word (2-5 letters)
+  - hint (string, max 2048) - Short clue text
+  - definition (string, max 2048) - Full definition used as puzzle clue
+  - category (reference to x_1468549_mini_c_0_word_category) - Theme categorization
+- Indexes:
+  - category (non-unique index for performance)
+- Sample data: Include at least 50+ words like "APPLE", "BREAD", "CRANE", "DANCE", "EAGLE", etc. with appropriate hints and definitions
+
+### [TABLE 2] Word Category
+- Table label and name: Word Category, x_1468549_mini_c_0_word_category
+- Extends: none
+- Purpose: Organize words by theme
+- Fields:
+  - number (string, max 40, auto-generated) - Record identifier
+  - name (string, max 128, required, display=true) - Category name
+  - description (string, max 2048) - Category description
+- Sample data: "Sports", "Food", "Animals", "Technology", "General"
+
+### [TABLE 3] Puzzle Definition
+- Table label and name: Puzzle, x_1468549_mini_c_0_daily_puzzle
+- Extends: none
+- Purpose: Define a complete crossword puzzle configuration
+- Fields:
+  - number (string, max 40, auto-generated, encrypted, display=true) - Record identifier
+  - type (choice, required) - "daily" or "random"
+    - Choices: daily=Daily, random=Random
+  - date (glide_date) - Date for daily puzzles
+  - category (reference to x_1468549_mini_c_0_word_category) - Optional theme filter
+- Indexes:
+  - category (non-unique index)
+- Notes: Each record represents one complete puzzle configuration
+
+### [TABLE 4] Puzzle Grid Layout
+- Table label and name: Grid, x_1468549_mini_c_0_puzzle_grid
+- Extends: none
+- Purpose: Define word placement in the 5x5 grid for a puzzle
+- Fields:
+  - number (string, max 40, auto-generated, encrypted, display=true) - Record identifier
+  - daily_puzzle (reference to x_1468549_mini_c_0_daily_puzzle, required) - Parent puzzle
+  - word (reference to x_1468549_mini_c_0_word, required) - Word being placed
+  - row (choice, default=1) - Starting row position (1-5)
+    - Choices: 1, 2, 3, 4, 5
+  - column (choice, default=1) - Starting column position (1-5)
+    - Choices: 1, 2, 3, 4, 5
+  - direction (choice, required) - Word orientation
+    - Choices: horizontal=Horizontal, vertical=Vertical
+- Indexes:
+  - daily_puzzle (non-unique, for fast puzzle loading)
+  - word (non-unique, for word lookup)
+- Relationships:
+  - One daily_puzzle has many puzzle_grid entries (typically 5-10 words)
+  - Many puzzle_grid entries can reference the same word
+- Notes:
+  - Variable word count per puzzle (minimum 3)
+  - Includes intentionally placed words AND cross-words formed by intersections
+  - Starting position means the first letter's cell location
+
+### [TABLE 5] Import Template
+- Table label and name: Import Template for Words, u_imp_tmpl_x_1468549_mini_c_0_word
+- Extends: none
+- Purpose: Bulk load word data via import sets
+- Fields:
+  - u_sys_id (string) - Unique identifier for deduplication
+  - u_word (string) - Word text
+  - u_hint (string) - Hint text
+  - u_definition (string) - Definition text
+  - u_category (reference to x_1468549_mini_c_0_word_category) - Category reference
+  - u_number (string) - Record number
+- Notes: Used with transform maps for bulk word uploads
+
+## Core Business Logic
+
+### Script Include: Puzzle Generator Algorithm
+
+Create a Script Include named **MiniCrossword** (API name: x_1468549_mini_c_0.MiniCrossword) with package_private access.
+
+**Purpose**: Generate valid crossword puzzles using constraint satisfaction with backtracking.
+
+**Public Methods Required**:
+
+1. **`generatePuzzle(categorySysId, puzzleType, puzzleDate)`**
+   - Parameters:
+     - categorySysId (String, optional): Filter words by category. If null, use all words.
+     - puzzleType (String, required): Either "daily" or "random"
+     - puzzleDate (String, optional): Date for daily puzzles (YYYY-MM-DD). Required if type is "daily".
+   - Returns: Object with {success, puzzleSysId, wordCount, gridCoverage, message, attemptsUsed}
+   - Behavior:
+     - Query word pool from x_1468549_mini_c_0_word (filtered by category if provided)
+     - Generate randomization seed (timestamp for random, date-hash for daily)
+     - Attempt puzzle generation using three-phase placement strategy
+     - Validate all cross-words are valid dictionary words
+     - Extract ALL valid words from final grid (including cross-words)
+     - Create daily_puzzle and puzzle_grid records
+     - Return result object
+
+2. **`validatePuzzle(puzzleSysId)`**
+   - Parameters:
+     - puzzleSysId (String, required): sys_id of daily_puzzle record
+   - Returns: Object with {valid, errors, wordCount, intersectionCount}
+   - Behavior:
+     - Load all puzzle_grid records for the puzzle
+     - Check that letters match at all intersection points
+     - Return validation results
+
+**Algorithm Strategy** (three-phase approach):
+
+Phase 1 - First Row Guarantee:
+- Try to place a horizontal word in row 1, attempting columns 1-5
+- If successful, continue to Phase 2
+- If no word fits anywhere in row 1, retry with different word shuffle
+
+Phase 2 - Additional Horizontal Words:
+- For rows 2-5, attempt to place one horizontal word per row
+- Words must intersect with existing words (matching letters required)
+- Validate that placing the word doesn't create invalid vertical cross-words
+- Skip row if no compatible word found
+
+Phase 3 - Vertical Words:
+- For columns 1-5, attempt to place one vertical word per column
+- Words must intersect with existing words (matching letters required)
+- Validate that placing the word doesn't create invalid horizontal cross-words
+- Skip column if no compatible word found
+
+**Critical Validation**: Before placing any word, simulate the placement and check that ALL horizontal and vertical letter sequences form valid dictionary words (2+ letters). Reject placements that create invalid cross-words.
+
+**Retry Logic**: If puzzle has fewer than 3 words, retry generation up to 10 times with different word shuffles (seed += 1000).
+
+**Constants**:
+- GRID_SIZE = 5
+- MIN_WORD_COUNT = 3
+- MAX_ATTEMPTS = 1000 (per generation attempt)
+- MAX_RETRIES = 10 (total retry attempts)
+
+## User Experience
+
+### Service Portal Widget: minicrossword
+
+Create a Service Portal widget named **minicrossword** (ID: minicrossword).
+
+**Widget Architecture**: Three parts (server script, client controller, HTML template)
+
+#### Server Script (Data Preparation):
+1. Query a random puzzle from x_1468549_mini_c_0_daily_puzzle table
+2. Load all puzzle_grid records for that puzzle
+3. For each puzzle_grid entry, fetch the word and definition from x_1468549_mini_c_0_word
+4. Build a 5x5 grid structure (25 cells) with metadata:
+   - row (1-5)
+   - col (1-5)
+   - isBlank (true if no word occupies this cell, false otherwise)
+   - correctLetter (the expected letter for this cell, or null if blank)
+5. Organize clues into two arrays (across, down) sorted by position
+6. Pass data to client: {grid, clues, puzzleName}
+
+#### Client Controller (AngularJS):
+1. Initialize grid from server data, adding:
+   - userLetter (empty string) - what user typed
+   - isCorrect (false) - green highlight flag
+   - isIncorrect (false) - red highlight flag
+2. Handle cell selection (selectCell function)
+3. Handle keyboard events (handleKeyDown function):
+   - Letters A-Z: Update userLetter, validate, move to next cell
+   - Backspace: Clear letter, validate, move to previous cell
+   - Arrow keys: Navigate up/down/left/right
+4. Validation logic (checkCell function):
+   - If userLetter matches correctLetter: isCorrect=true, isIncorrect=false
+   - If userLetter doesn't match: isCorrect=false, isIncorrect=true
+   - If userLetter is empty: isCorrect=false, isIncorrect=false
+5. Completion detection (checkCompletion function):
+   - If ALL non-blank cells are correct: Show success message
+
+#### HTML Template (AngularJS):
+1. Header: "Mini Crossword" title, puzzle name subtitle
+2. Success alert (shown when isComplete=true)
+3. Crossword grid:
+   - 5 rows × 5 columns
+   - Each cell is either blank (black square) or input (white square with text input)
+   - Input elements bound to userLetter with ng-model
+   - CSS classes for state: blank, active, correct, incorrect
+   - Event handlers: ng-click for selection, ng-keydown for keyboard
+4. Clues section (two-column layout):
+   - Left column: "Across" clues
+   - Right column: "Down" clues
+   - Each clue: number, hint text, position indicator
+
+#### CSS Styling:
+- Grid: 3px black outer border, 1px borders between cells, box shadow
+- Cells: 50px × 50px (desktop), 45px (tablet), 40px (mobile)
+- Blank cells: Black background (#000)
+- Active cell: Yellow background (#fffacd), blue inset shadow
+- Correct cell: Light green background (#d4edda)
+- Incorrect cell: Light red background (#f8d7da)
+- Input: 24px bold uppercase letters, centered, transparent background
+- Clues: Light gray background (#f8f9fa), hover effect, numbered list
+
+### Service Portal Page
+
+Create a Service Portal page named **minicrossword** (ID: minicrossword) that contains the minicrossword widget.
+
+## Security and Roles
+
+- Roles: Use default user role (logged-in users can play)
+- ACLs: Read access to all puzzle tables for logged-in users
+- Data isolation: None needed (puzzles are shared content)
+
+## Automation
+
+**Flow Designer**: None required
+
+**Server Logic**:
+- Transform map for bulk word imports (u_imp_tmpl_x_1468549_mini_c_0_word → x_1468549_mini_c_0_word)
+- Transform script to map import fields to target fields
+
+**Optional Enhancement**: Scheduled job to auto-generate daily puzzles (runs at midnight, calls generatePuzzle with type='daily' and current date)
+
+## Technical Architecture
+
+### Technology Stack
+- Platform: ServiceNow (scoped application)
+- Scope name: x_1468549_mini_c_0 (Mini-crossword)
+- Service Portal: AngularJS 1.x frontend framework
+- Server-side: GlideRecord API, server-side JavaScript
+- Styling: Custom CSS with responsive breakpoints
+
+### Key Integration Points
+- Service Portal widget server script queries puzzle data via GlideRecord
+- Client controller receives data via $scope.data object
+- AngularJS two-way binding (ng-model) for real-time letter updates
+- No external APIs or web services needed
+
+### Performance Considerations
+- Index on puzzle_grid.daily_puzzle for fast puzzle loading
+- Index on word.category for filtered generation
+- Puzzle generation runs server-side asynchronously
+- Grid validation happens client-side for instant feedback
+
+## Output Required From You (the build agent)
+
+Provide at the end:
+
+1. **Build log** listing everything created:
+   - Table names and sys_ids
+   - Script Include name and sys_id
+   - Service Portal widget name and sys_id
+   - Service Portal page name and sys_id
+   - Transform map details
+   - Sample data record counts
+
+2. **Quick start checklist**:
+   - How to import word data
+   - How to generate a puzzle manually (Script Background)
+   - How to access the game (Service Portal URL)
+   - How to test the puzzle generator
+
+3. **Assumptions made**:
+   - Any design decisions where requirements were ambiguous
+   - Default values chosen
+   - Simplifications or enhancements added
+
+## Constraints and Defaults
+
+- **Prefer simplicity**: If a choice must be made between complex and simple, choose simple
+- **Server-side generation**: Puzzle generation must happen server-side (not client-side)
+- **Real-time feedback**: Letter validation must feel instant (no server round-trips during gameplay)
+- **Mobile-friendly**: Grid must be usable on phones (touch input, responsive sizing)
+- **No external dependencies**: Use only ServiceNow platform capabilities
+- **Scope all tables**: All tables must be scoped to x_1468549_mini_c_0 namespace
+- **Classic crossword aesthetic**: Black and white grid, traditional newspaper puzzle look
+- **Variable-length words**: Support words from 2-5 letters (not just 5-letter words)
+- **Cross-word validation**: CRITICAL - ensure all letter sequences form valid words
+- **Blank spaces allowed**: Grid doesn't need to be 100% filled
+
+## Critical Success Factors
+
+Your implementation MUST include:
+
+1. ✅ Puzzle generator that creates solvable crosswords with valid intersections
+2. ✅ Cross-word validation (all horizontal/vertical sequences are valid words)
+3. ✅ Interactive grid with click-to-select and keyboard navigation
+4. ✅ Real-time green/red validation feedback
+5. ✅ Completion detection with success message
+6. ✅ Organized clue display (Across/Down)
+7. ✅ Auto-load random puzzle on page open
+8. ✅ Mobile-responsive design
+
+The application should feel like playing the New York Times Mini Crossword - simple, elegant, and satisfying to complete.
