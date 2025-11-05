@@ -399,16 +399,39 @@
 
 	// Get a random puzzle
 	var puzzleGR = new GlideRecord('x_1468549_mini_c_0_daily_puzzle');
-	puzzleGR.orderByDesc('sys_created_on');
-	puzzleGR.setLimit(1);
 	puzzleGR.query();
 
-	if (puzzleGR.next()) {
-		data.puzzleName = puzzleGR.getValue('type') === 'daily' && puzzleGR.getValue('date') ?
-			'Daily Puzzle - ' + puzzleGR.getValue('date') :
+	// Count total puzzles
+	var puzzleCount = puzzleGR.getRowCount();
+
+	if (puzzleCount === 0) {
+		data.error = 'No puzzles available';
+		return;
+	}
+
+	// Pick a random index
+	var randomIndex = Math.floor(Math.random() * puzzleCount);
+
+	// Query again and skip to random position
+	puzzleGR = new GlideRecord('x_1468549_mini_c_0_daily_puzzle');
+	puzzleGR.query();
+
+	var currentIndex = 0;
+	var selectedPuzzle = null;
+	while (puzzleGR.next()) {
+		if (currentIndex === randomIndex) {
+			selectedPuzzle = puzzleGR;
+			break;
+		}
+		currentIndex++;
+	}
+
+	if (selectedPuzzle) {
+		data.puzzleName = selectedPuzzle.getValue('type') === 'daily' && selectedPuzzle.getValue('date') ?
+			'Daily Puzzle - ' + selectedPuzzle.getValue('date') :
 			'Random Puzzle';
 
-		var puzzleId = puzzleGR.getValue('sys_id');
+		var puzzleId = selectedPuzzle.getValue('sys_id');
 
 		// Load puzzle grid
 		var gridGR = new GlideRecord('x_1468549_mini_c_0_puzzle_grid');
