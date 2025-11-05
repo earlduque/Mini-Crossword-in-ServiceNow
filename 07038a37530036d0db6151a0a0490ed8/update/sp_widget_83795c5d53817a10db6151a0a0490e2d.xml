@@ -418,7 +418,7 @@
 		while (gridGR.next()) {
 			var wordRecord = gridGR.word.getRefRecord();
 			var wordText = wordRecord.getValue('word');
-			var hint = wordRecord.getValue('hint') || 'No clue provided';
+			var hint = wordRecord.getValue('definition') || wordRecord.getValue('hint') || 'No clue provided';
 
 			var wordData = {
 				sys_id: gridGR.getValue('sys_id'),
