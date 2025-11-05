@@ -192,7 +192,7 @@
 	initializeGrid();
 };]]></client_script>
         <controller_as>c</controller_as>
-        <css><![CDATA[.mini-crossword-container {
+        <css>.mini-crossword-container {
 	max-width: 800px;
 	margin: 0 auto;
 	padding: 20px;
@@ -373,7 +373,7 @@
 	.cell-input {
 		font-size: 18px;
 	}
-}]]></css>
+}</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>

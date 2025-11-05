@@ -5,24 +5,24 @@
             <choice>
                 <element inactive_on_update="false" label="3" sequence="3" value="3"/>
                 <element inactive_on_update="false" label="2" sequence="2" value="2"/>
-                <element inactive_on_update="false" label="4" sequence="4" value="4"/>
-                <element inactive_on_update="false" label="1" sequence="1" value="1"/>
                 <element inactive_on_update="false" label="5" sequence="5" value="5"/>
+                <element inactive_on_update="false" label="1" sequence="1" value="1"/>
+                <element inactive_on_update="false" label="4" sequence="4" value="4"/>
             </choice>
         </element>
         <element choice="3" default="1" label="Row" max_length="40" name="row" type="choice">
             <choice>
-                <element inactive_on_update="false" label="3" sequence="3" value="3"/>
                 <element inactive_on_update="false" label="1" sequence="1" value="1"/>
-                <element inactive_on_update="false" label="4" sequence="4" value="4"/>
-                <element inactive_on_update="false" label="2" sequence="2" value="2"/>
                 <element inactive_on_update="false" label="5" sequence="5" value="5"/>
+                <element inactive_on_update="false" label="4" sequence="4" value="4"/>
+                <element inactive_on_update="false" label="3" sequence="3" value="3"/>
+                <element inactive_on_update="false" label="2" sequence="2" value="2"/>
             </choice>
         </element>
         <element choice="1" label="Direction" mandatory="true" max_length="40" name="direction" type="choice">
             <choice>
-                <element inactive_on_update="false" label="Horizontal" sequence="1" value="horizontal"/>
                 <element inactive_on_update="false" label="Vertical" sequence="0" value="vertical"/>
+                <element inactive_on_update="false" label="Horizontal" sequence="1" value="horizontal"/>
             </choice>
         </element>
         <element label="Word" max_length="32" name="word" reference="x_1468549_mini_c_0_word" type="reference"/>

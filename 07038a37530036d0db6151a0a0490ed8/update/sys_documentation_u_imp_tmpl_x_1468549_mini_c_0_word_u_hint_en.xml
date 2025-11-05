@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="u_hint" label="Hint" language="en" table="u_imp_tmpl_x_1468549_mini_c_0_word">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>u_hint</element>
+            <help/>
+            <hint/>
+            <label>Hint</label>
+            <language>en</language>
+            <name>u_imp_tmpl_x_1468549_mini_c_0_word</name>
+            <plural>Hints</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2025-11-05 09:02:27</sys_created_on>
+            <sys_id>e248d0d953817a10db6151a0a0490ea1</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Hint</sys_name>
+            <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+            <sys_update_name>sys_documentation_u_imp_tmpl_x_1468549_mini_c_0_word_u_hint_en</sys_update_name>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2025-11-05 09:02:27</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>
