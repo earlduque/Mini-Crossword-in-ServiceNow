@@ -35,6 +35,8 @@ MiniCrossword.prototype = {
      * - Minimum 3 words required for a valid puzzle
      * - First row must contain at least one horizontal word
      * - Words must intersect with matching letters at shared cells
+     * - CRITICAL: ALL horizontal and vertical letter sequences must form valid dictionary words
+     * - Cross-word validation ensures no invalid words are formed by intersections
      * - Blank spaces are allowed when no valid word fits
      *
      * @param {String} categorySysId - (Optional) sys_id of the word_category record. If null/empty, uses all available words
@@ -418,11 +420,79 @@ MiniCrossword.prototype = {
                 // For first word in a direction, intersection not required
                 // Otherwise, require at least one intersection
                 if (hasIntersection || this._isFirstInDirection(grid, direction)) {
-                    return word;
+                    // CRITICAL: Validate that placing this word doesn't create invalid cross-words
+                    if (this._wouldCreateValidCrossWords(grid, word, row, col, direction, wordPool)) {
+                        return word;
+                    }
                 }
             }
         }
         return null;
+    },
+
+    _wouldCreateValidCrossWords: function(grid, wordObj, row, col, direction, wordPool) {
+        // Create a temporary grid with the word placed
+        var tempGrid = this._cloneGrid(grid);
+        this._placeWord(tempGrid, wordObj, row, col, direction);
+
+        // Build a lookup map of valid words for fast checking
+        var validWords = {};
+        for (var i = 0; i < wordPool.length; i++) {
+            validWords[wordPool[i].word] = true;
+        }
+
+        // Check all rows for valid words
+        for (var r = 1; r <= this.GRID_SIZE; r++) {
+            var rowWord = this._extractWord(tempGrid, r, 1, 'horizontal');
+            if (rowWord && rowWord.length >= 2) {
+                if (!validWords[rowWord]) {
+                    return false; // Invalid horizontal word formed
+                }
+            }
+        }
+
+        // Check all columns for valid words
+        for (var c = 1; c <= this.GRID_SIZE; c++) {
+            var colWord = this._extractWord(tempGrid, 1, c, 'vertical');
+            if (colWord && colWord.length >= 2) {
+                if (!validWords[colWord]) {
+                    return false; // Invalid vertical word formed
+                }
+            }
+        }
+
+        return true; // All cross-words are valid
+    },
+
+    _cloneGrid: function(grid) {
+        var clone = {};
+        for (var r = 1; r <= this.GRID_SIZE; r++) {
+            clone[r] = {};
+            for (var c = 1; c <= this.GRID_SIZE; c++) {
+                clone[r][c] = grid[r][c];
+            }
+        }
+        return clone;
+    },
+
+    _extractWord: function(grid, row, col, direction) {
+        var word = '';
+        var hasLetters = false;
+
+        for (var i = 0; i < this.GRID_SIZE; i++) {
+            var r = direction === 'horizontal' ? row : row + i;
+            var c = direction === 'horizontal' ? col + i : col;
+
+            if (grid[r][c] !== null) {
+                word += grid[r][c].letter;
+                hasLetters = true;
+            } else if (hasLetters) {
+                // Stop at first gap after letters started
+                break;
+            }
+        }
+
+        return hasLetters ? word : null;
     },
 
     _isFirstInDirection: function(grid, direction) {
