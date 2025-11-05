@@ -1,9 +1,487 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[api.controller=function() {  /* widget controller */  var c = this;};]]></client_script>
+        <client_script><![CDATA[api.controller=function($scope) {
+	var c = this;
+
+	// Initialize user grid (what the user has entered)
+	c.userGrid = [];
+	for (var i = 0; i < 5; i++) {
+		c.userGrid[i] = [];
+		for (var j = 0; j < 5; j++) {
+			c.userGrid[i][j] = {
+				letter: '',
+				isCorrect: null,
+				isActive: false
+			};
+		}
+	}
+
+	c.selectedCell = null;
+	c.puzzleComplete = false;
+
+	// Select a cell for input
+	c.selectCell = function(rowIdx, colIdx) {
+		var cell = c.data.grid[rowIdx][colIdx];
+
+		// Can't select blank cells
+		if (cell.isBlank) {
+			return;
+		}
+
+		// Clear previous selection
+		if (c.selectedCell) {
+			c.userGrid[c.selectedCell.row][c.selectedCell.col].isActive = false;
+		}
+
+		// Set new selection
+		c.selectedCell = {row: rowIdx, col: colIdx};
+		c.userGrid[rowIdx][colIdx].isActive = true;
+	};
+
+	// Handle keyboard input
+	c.handleKeyPress = function(event, rowIdx, colIdx) {
+		var key = event.key.toUpperCase();
+
+		// Handle letter input (A-Z)
+		if (key.length === 1 && key >= 'A' && key <= 'Z') {
+			c.userGrid[rowIdx][colIdx].letter = key;
+			c.validateCell(rowIdx, colIdx);
+
+			// Auto-advance to next cell
+			c.advanceToNextCell(rowIdx, colIdx);
+
+			event.preventDefault();
+		}
+		// Handle backspace
+		else if (event.keyCode === 8 || event.key === 'Backspace') {
+			c.userGrid[rowIdx][colIdx].letter = '';
+			c.userGrid[rowIdx][colIdx].isCorrect = null;
+
+			// Move to previous cell
+			c.moveToPreviousCell(rowIdx, colIdx);
+
+			event.preventDefault();
+		}
+		// Handle arrow keys
+		else if (event.keyCode >= 37 && event.keyCode <= 40) {
+			c.handleArrowKey(event.keyCode, rowIdx, colIdx);
+			event.preventDefault();
+		}
+	};
+
+	// Validate a single cell
+	c.validateCell = function(rowIdx, colIdx) {
+		var correctLetter = c.data.grid[rowIdx][colIdx].correctLetter;
+		var userLetter = c.userGrid[rowIdx][colIdx].letter;
+
+		if (userLetter === '') {
+			c.userGrid[rowIdx][colIdx].isCorrect = null;
+		} else if (userLetter === correctLetter) {
+			c.userGrid[rowIdx][colIdx].isCorrect = true;
+		} else {
+			c.userGrid[rowIdx][colIdx].isCorrect = false;
+		}
+
+		// Check if puzzle is complete
+		c.checkPuzzleComplete();
+	};
+
+	// Check if entire puzzle is completed correctly
+	c.checkPuzzleComplete = function() {
+		for (var i = 0; i < 5; i++) {
+			for (var j = 0; j < 5; j++) {
+				if (!c.data.grid[i][j].isBlank) {
+					if (c.userGrid[i][j].isCorrect !== true) {
+						c.puzzleComplete = false;
+						return;
+					}
+				}
+			}
+		}
+		c.puzzleComplete = true;
+	};
+
+	// Move to next available cell (horizontal priority)
+	c.advanceToNextCell = function(rowIdx, colIdx) {
+		// Try next cell in row
+		if (colIdx < 4 && !c.data.grid[rowIdx][colIdx + 1].isBlank) {
+			c.selectCell(rowIdx, colIdx + 1);
+			c.focusCell(rowIdx, colIdx + 1);
+			return;
+		}
+
+		// Try next row, first available cell
+		for (var i = rowIdx; i < 5; i++) {
+			var startCol = (i === rowIdx) ? colIdx + 1 : 0;
+			for (var j = startCol; j < 5; j++) {
+				if (!c.data.grid[i][j].isBlank) {
+					c.selectCell(i, j);
+					c.focusCell(i, j);
+					return;
+				}
+			}
+		}
+	};
+
+	// Move to previous available cell
+	c.moveToPreviousCell = function(rowIdx, colIdx) {
+		// Try previous cell in row
+		if (colIdx > 0 && !c.data.grid[rowIdx][colIdx - 1].isBlank) {
+			c.selectCell(rowIdx, colIdx - 1);
+			c.focusCell(rowIdx, colIdx - 1);
+			return;
+		}
+
+		// Try previous rows, last available cell
+		for (var i = rowIdx; i >= 0; i--) {
+			var startCol = (i === rowIdx) ? colIdx - 1 : 4;
+			for (var j = startCol; j >= 0; j--) {
+				if (!c.data.grid[i][j].isBlank) {
+					c.selectCell(i, j);
+					c.focusCell(i, j);
+					return;
+				}
+			}
+		}
+	};
+
+	// Handle arrow key navigation
+	c.handleArrowKey = function(keyCode, rowIdx, colIdx) {
+		var newRow = rowIdx;
+		var newCol = colIdx;
+
+		switch(keyCode) {
+			case 37: // Left
+				newCol = Math.max(0, colIdx - 1);
+				break;
+			case 38: // Up
+				newRow = Math.max(0, rowIdx - 1);
+				break;
+			case 39: // Right
+				newCol = Math.min(4, colIdx + 1);
+				break;
+			case 40: // Down
+				newRow = Math.min(4, rowIdx + 1);
+				break;
+		}
+
+		// Skip blank cells
+		if (!c.data.grid[newRow][newCol].isBlank) {
+			c.selectCell(newRow, newCol);
+			c.focusCell(newRow, newCol);
+		}
+	};
+
+	// Focus on a specific cell's input
+	c.focusCell = function(rowIdx, colIdx) {
+		$scope.$applyAsync(function() {
+			var cellId = 'cell-' + rowIdx + '-' + colIdx;
+			var element = document.getElementById(cellId);
+			if (element) {
+				element.focus();
+			}
+		});
+	};
+
+	// Get CSS class for cell styling
+	c.getCellClass = function(rowIdx, colIdx) {
+		var userCell = c.userGrid[rowIdx][colIdx];
+		var classes = ['crossword-cell'];
+
+		if (c.data.grid[rowIdx][colIdx].isBlank) {
+			classes.push('blank-cell');
+		} else {
+			classes.push('input-cell');
+
+			if (userCell.isActive) {
+				classes.push('active-cell');
+			}
+
+			if (userCell.isCorrect === true) {
+				classes.push('correct-cell');
+			} else if (userCell.isCorrect === false) {
+				classes.push('incorrect-cell');
+			}
+		}
+
+		return classes.join(' ');
+	};
+}];]]></client_script>
         <controller_as>c</controller_as>
-        <css/>
+        <css>.mini-crossword-container {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 20px;
+	background-color: #f5f5f0;
+	font-family: 'Georgia', 'Times New Roman', serif;
+	color: #2c2c2c;
+}
+
+/* Newspaper Header Styling */
+.newspaper-header {
+	text-align: center;
+	border-bottom: 3px double #333;
+	padding-bottom: 15px;
+	margin-bottom: 30px;
+	background-color: #e8e8e0;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.newspaper-title {
+	font-family: 'Georgia', serif;
+	font-size: 42px;
+	font-weight: bold;
+	margin: 0;
+	color: #1a1a1a;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	text-shadow: 2px 2px 0px #d0d0c8;
+}
+
+.newspaper-date {
+	font-size: 14px;
+	color: #666;
+	margin-top: 5px;
+	font-style: italic;
+}
+
+.puzzle-type {
+	font-size: 16px;
+	color: #555;
+	margin-top: 5px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+/* Crossword Grid Wrapper */
+.crossword-wrapper {
+	background-color: #fff;
+	padding: 30px;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+	border: 1px solid #ccc;
+}
+
+/* Crossword Grid */
+.crossword-grid {
+	display: inline-block;
+	border: 3px solid #000;
+	background-color: #000;
+	box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+	margin-bottom: 30px;
+}
+
+.grid-row {
+	display: flex;
+	line-height: 0;
+}
+
+.grid-cell-wrapper {
+	display: inline-block;
+}
+
+.crossword-cell {
+	width: 50px;
+	height: 50px;
+	border: 1px solid #000;
+	position: relative;
+	box-sizing: border-box;
+}
+
+/* Blank cells (black squares) */
+.blank-cell {
+	background-color: #1a1a1a;
+}
+
+/* Input cells (white squares) */
+.input-cell {
+	background-color: #fff;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.input-cell:hover {
+	background-color: #f9f9f9;
+}
+
+/* Active cell (selected) */
+.active-cell {
+	background-color: #fff9e6 !important;
+	box-shadow: inset 0 0 0 2px #4a90e2;
+}
+
+/* Correct answer (green) */
+.correct-cell {
+	background-color: #d4edda !important;
+	border-color: #28a745;
+}
+
+/* Incorrect answer (red) */
+.incorrect-cell {
+	background-color: #f8d7da !important;
+	border-color: #dc3545;
+}
+
+/* Clue number in top-left corner */
+.clue-number {
+	position: absolute;
+	top: 2px;
+	left: 3px;
+	font-size: 10px;
+	font-weight: bold;
+	color: #333;
+	line-height: 1;
+	font-family: Arial, sans-serif;
+}
+
+/* Cell input field */
+.cell-input {
+	width: 100%;
+	height: 100%;
+	border: none;
+	background: transparent;
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	color: #1a1a1a;
+	text-transform: uppercase;
+	outline: none;
+	padding: 0;
+	margin: 0;
+	caret-color: transparent;
+}
+
+.cell-input:focus {
+	outline: none;
+}
+
+/* Success Banner */
+.success-banner {
+	background-color: #d4edda;
+	border: 2px solid #28a745;
+	border-radius: 8px;
+	padding: 20px;
+	margin-bottom: 30px;
+	text-align: center;
+	box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+}
+
+.success-banner h2 {
+	color: #155724;
+	margin: 0 0 10px 0;
+	font-size: 28px;
+}
+
+.success-banner p {
+	color: #155724;
+	margin: 0;
+	font-size: 16px;
+}
+
+/* Clues Container */
+.clues-container {
+	display: flex;
+	gap: 40px;
+	margin-top: 30px;
+}
+
+.clues-column {
+	flex: 1;
+}
+
+.clues-heading {
+	font-family: 'Georgia', serif;
+	font-size: 20px;
+	font-weight: bold;
+	color: #1a1a1a;
+	border-bottom: 2px solid #333;
+	padding-bottom: 8px;
+	margin-bottom: 15px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.clue-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.clue-item {
+	padding: 10px;
+	background-color: #fafafa;
+	border-left: 3px solid #666;
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.clue-item:hover {
+	background-color: #f0f0f0;
+	border-left-color: #333;
+}
+
+.clue-number-label {
+	font-weight: bold;
+	color: #333;
+	margin-right: 8px;
+	font-size: 14px;
+}
+
+.clue-text {
+	color: #2c2c2c;
+	font-size: 15px;
+	line-height: 1.4;
+}
+
+.clue-position {
+	display: block;
+	font-size: 11px;
+	color: #888;
+	margin-top: 4px;
+	font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.crossword-cell {
+		width: 45px;
+		height: 45px;
+	}
+
+	.cell-input {
+		font-size: 20px;
+	}
+
+	.clues-container {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.newspaper-title {
+		font-size: 32px;
+	}
+}
+
+@media (max-width: 576px) {
+	.crossword-cell {
+		width: 40px;
+		height: 40px;
+	}
+
+	.cell-input {
+		font-size: 18px;
+	}
+
+	.newspaper-title {
+		font-size: 28px;
+	}
+
+	.crossword-wrapper {
+		padding: 15px;
+	}
+}
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>
@@ -17,7 +495,165 @@
         <option_schema/>
         <public>false</public>
         <roles/>
-        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <script><![CDATA[(function() {
+	// Load a random puzzle on widget initialization
+
+	// Query a random puzzle from daily_puzzle table
+	var puzzleGR = new GlideRecord('x_1468549_mini_c_0_daily_puzzle');
+	puzzleGR.orderBy('sys_created_on');
+	puzzleGR.query();
+
+	// Get random puzzle
+	var puzzles = [];
+	while (puzzleGR.next()) {
+		puzzles.push(puzzleGR.getUniqueValue());
+	}
+
+	if (puzzles.length === 0) {
+		data.error = "No puzzles available";
+		return;
+	}
+
+	// Select random puzzle
+	var randomIndex = Math.floor(Math.random() * puzzles.length);
+	var selectedPuzzleSysId = puzzles[randomIndex];
+
+	// Load the selected puzzle
+	puzzleGR = new GlideRecord('x_1468549_mini_c_0_daily_puzzle');
+	if (puzzleGR.get(selectedPuzzleSysId)) {
+		data.puzzle = {
+			sys_id: puzzleGR.getUniqueValue(),
+			type: puzzleGR.getValue('type'),
+			date: puzzleGR.getValue('date')
+		};
+
+		// Load all grid records for this puzzle
+		var gridGR = new GlideRecord('x_1468549_mini_c_0_puzzle_grid');
+		gridGR.addQuery('daily_puzzle', selectedPuzzleSysId);
+		gridGR.query();
+
+		data.words = [];
+
+		while (gridGR.next()) {
+			var wordSysId = gridGR.getValue('word');
+
+			// Load word details (including definition/hint)
+			var wordGR = new GlideRecord('x_1468549_mini_c_0_word');
+			if (wordGR.get(wordSysId)) {
+				data.words.push({
+					word: wordGR.getValue('word').toUpperCase(),
+					hint: wordGR.getValue('hint'),
+					definition: wordGR.getValue('definition'),
+					row: parseInt(gridGR.getValue('row')),
+					column: parseInt(gridGR.getValue('column')),
+					direction: gridGR.getValue('direction')
+				});
+			}
+		}
+
+		// Build 5x5 grid structure
+		data.grid = [];
+		for (var i = 0; i < 5; i++) {
+			data.grid[i] = [];
+			for (var j = 0; j < 5; j++) {
+				data.grid[i][j] = {
+					row: i + 1,
+					col: j + 1,
+					correctLetter: null,
+					isBlank: true,
+					clueNumbers: []
+				};
+			}
+		}
+
+		// Populate grid with correct letters and mark active cells
+		var clueNumber = 1;
+		var clueMap = {}; // Track which words get which clue numbers
+
+		// First pass: assign clue numbers based on starting positions
+		var startPositions = [];
+		for (var w = 0; w < data.words.length; w++) {
+			var word = data.words[w];
+			var key = word.row + ',' + word.column;
+			startPositions.push({
+				key: key,
+				row: word.row,
+				col: word.column,
+				wordIndex: w
+			});
+		}
+
+		// Sort by row, then column to assign clue numbers in reading order
+		startPositions.sort(function(a, b) {
+			if (a.row !== b.row) return a.row - b.row;
+			return a.col - b.col;
+		});
+
+		// Assign clue numbers
+		var positionToClueNumber = {};
+		for (var p = 0; p < startPositions.length; p++) {
+			var pos = startPositions[p];
+			if (!positionToClueNumber[pos.key]) {
+				positionToClueNumber[pos.key] = clueNumber;
+				clueNumber++;
+			}
+		}
+
+		// Second pass: populate grid and assign clue numbers to words
+		for (var w = 0; w < data.words.length; w++) {
+			var word = data.words[w];
+			var posKey = word.row + ',' + word.column;
+			word.clueNumber = positionToClueNumber[posKey];
+
+			for (var c = 0; c < word.word.length; c++) {
+				var gridRow, gridCol;
+
+				if (word.direction === 'horizontal') {
+					gridRow = word.row - 1;
+					gridCol = word.column - 1 + c;
+				} else {
+					gridRow = word.row - 1 + c;
+					gridCol = word.column - 1;
+				}
+
+				if (gridRow >= 0 && gridRow < 5 && gridCol >= 0 && gridCol < 5) {
+					var cell = data.grid[gridRow][gridCol];
+					cell.correctLetter = word.word[c];
+					cell.isBlank = false;
+
+					// Add clue number to first cell of word
+					if (c === 0) {
+						cell.clueNumbers.push(word.clueNumber);
+					}
+				}
+			}
+		}
+
+		// Organize clues by direction
+		data.acrossClues = [];
+		data.downClues = [];
+
+		for (var w = 0; w < data.words.length; w++) {
+			var word = data.words[w];
+			var clue = {
+				number: word.clueNumber,
+				text: word.definition || word.hint,
+				row: word.row,
+				col: word.column
+			};
+
+			if (word.direction === 'horizontal') {
+				data.acrossClues.push(clue);
+			} else {
+				data.downClues.push(clue);
+			}
+		}
+
+		// Sort clues by number
+		data.acrossClues.sort(function(a, b) { return a.number - b.number; });
+		data.downClues.sort(function(a, b) { return a.number - b.number; });
+	}
+})();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>admin</sys_created_by>
@@ -31,7 +667,81 @@
         <sys_update_name>sp_widget_e475665d53c1ba10db6151a0a0490eb5</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2025-11-05 19:19:10</sys_updated_on>
-        <template><![CDATA[<div><!-- your widget template --></div>]]></template>
+        <template><![CDATA[<div class="mini-crossword-container">
+	<div class="newspaper-header">
+		<h1 class="newspaper-title">The Mini Crossword</h1>
+		<div class="newspaper-date" ng-if="c.data.puzzle.date">{{c.data.puzzle.date}}</div>
+		<div class="puzzle-type">{{c.data.puzzle.type === 'daily' ? 'Daily Puzzle' : 'Random Puzzle'}}</div>
+	</div>
+
+	<!-- Error Message -->
+	<div ng-if="c.data.error" class="alert alert-warning">
+		<strong>No puzzles available.</strong> Please create a puzzle first.
+	</div>
+
+	<!-- Crossword Grid -->
+	<div ng-if="!c.data.error" class="crossword-wrapper">
+		<div class="crossword-grid">
+			<div class="grid-row" ng-repeat="row in c.data.grid track by $index">
+				<div class="grid-cell-wrapper" ng-repeat="cell in row track by $index">
+					<div class="{{c.getCellClass($parent.$index, $index)}}">
+						<!-- Clue number in top-left corner -->
+						<span class="clue-number" ng-if="cell.clueNumbers.length > 0">
+							{{cell.clueNumbers[0]}}
+						</span>
+
+						<!-- Input field for non-blank cells -->
+						<input
+							ng-if="!cell.isBlank"
+							type="text"
+							id="cell-{{$parent.$index}}-{{$index}}"
+							class="cell-input"
+							maxlength="1"
+							ng-model="c.userGrid[$parent.$index][$index].letter"
+							ng-keydown="c.handleKeyPress($event, $parent.$index, $index)"
+							ng-click="c.selectCell($parent.$index, $index)"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="characters"
+							spellcheck="false"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Success Message -->
+		<div ng-if="c.puzzleComplete" class="success-banner">
+			<h2>Congratulations!</h2>
+			<p>You've completed the puzzle!</p>
+		</div>
+
+		<!-- Clues Section -->
+		<div class="clues-container">
+			<div class="clues-column">
+				<h3 class="clues-heading">ACROSS</h3>
+				<div class="clue-list">
+					<div class="clue-item" ng-repeat="clue in c.data.acrossClues">
+						<span class="clue-number-label">{{clue.number}}.</span>
+						<span class="clue-text">{{clue.text}}</span>
+						<span class="clue-position">(Row {{clue.row}}, Col {{clue.col}})</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="clues-column">
+				<h3 class="clues-heading">DOWN</h3>
+				<div class="clue-list">
+					<div class="clue-item" ng-repeat="clue in c.data.downClues">
+						<span class="clue-number-label">{{clue.number}}.</span>
+						<span class="clue-text">{{clue.text}}</span>
+						<span class="clue-position">(Row {{clue.row}}, Col {{clue.col}})</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>]]></template>
     </sp_widget>
     <sys_es_latest_script action="INSERT_OR_UPDATE">
         <id>e475665d53c1ba10db6151a0a0490eb5</id>
