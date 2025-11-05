@@ -5,24 +5,13 @@
 	var c = this;
 
 	// Initialize
-	c.selectedPuzzle = null;
 	c.grid = [];
 	c.currentCell = null;
 	c.isComplete = false;
 
-	// Select puzzle and reload widget with puzzle data
-	c.selectPuzzle = function() {
-		if (c.selectedPuzzle) {
-			// Pass puzzle_id to server via input parameter
-			c.server.get({puzzle_id: c.selectedPuzzle}).then(function() {
-				initializeGrid();
-			});
-		}
-	};
-
 	// Initialize grid from server data
 	function initializeGrid() {
-		if (c.data.grid) {
+		if (c.data.grid && c.data.grid.length > 0) {
 			c.grid = c.data.grid.map(function(cell) {
 				return {
 					row: cell.row,
@@ -199,11 +188,8 @@
 		return (row - 1) * 5 + (col - 1);
 	};
 
-	// Initialize on load if a puzzle is already selected
-	if (c.data.selectedPuzzleId) {
-		c.selectedPuzzle = c.data.selectedPuzzleId;
-		initializeGrid();
-	}
+	// Initialize grid on load
+	initializeGrid();
 };]]></client_script>
         <controller_as>c</controller_as>
         <css><![CDATA[.mini-crossword-container {
@@ -212,18 +198,21 @@
 	padding: 20px;
 }
 
-/* Puzzle Selector */
-.puzzle-selector {
-	background: #f8f9fa;
-	padding: 20px;
-	border-radius: 8px;
+/* Puzzle Header */
+.puzzle-header {
+	text-align: center;
 	margin-bottom: 30px;
 }
 
-.puzzle-selector h2 {
+.puzzle-header h2 {
 	margin-top: 0;
-	margin-bottom: 15px;
+	margin-bottom: 10px;
 	color: #333;
+}
+
+.puzzle-header p {
+	margin-bottom: 0;
+	font-size: 14px;
 }
 
 /* Crossword Grid */
@@ -399,42 +388,31 @@
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
-	// Server-side script - Fetch puzzle list and selected puzzle data
+	// Server-side script - Auto-load a random puzzle
 
-	// Get list of all available puzzles
-	data.puzzles = [];
+	data.grid = [];
+	data.words = [];
+	data.clues = {
+		across: [],
+		down: []
+	};
+
+	// Get a random puzzle
 	var puzzleGR = new GlideRecord('x_1468549_mini_c_0_daily_puzzle');
 	puzzleGR.orderByDesc('sys_created_on');
+	puzzleGR.setLimit(1);
 	puzzleGR.query();
 
-	while (puzzleGR.next()) {
-		var puzzleDate = puzzleGR.getValue('date');
-		var puzzleType = puzzleGR.getValue('type');
-		var displayName = puzzleType === 'daily' && puzzleDate ?
-			'Daily - ' + puzzleDate :
-			'Random #' + puzzleGR.getValue('sys_id').substring(0, 8);
+	if (puzzleGR.next()) {
+		data.puzzleName = puzzleGR.getValue('type') === 'daily' && puzzleGR.getValue('date') ?
+			'Daily Puzzle - ' + puzzleGR.getValue('date') :
+			'Random Puzzle';
 
-		data.puzzles.push({
-			sys_id: puzzleGR.getValue('sys_id'),
-			name: displayName,
-			type: puzzleType,
-			date: puzzleDate
-		});
-	}
-
-	// If puzzle is selected, load its data
-	if (input && input.puzzle_id) {
-		data.selectedPuzzleId = input.puzzle_id;
-		data.grid = [];
-		data.words = [];
-		data.clues = {
-			across: [],
-			down: []
-		};
+		var puzzleId = puzzleGR.getValue('sys_id');
 
 		// Load puzzle grid
 		var gridGR = new GlideRecord('x_1468549_mini_c_0_puzzle_grid');
-		gridGR.addQuery('daily_puzzle', input.puzzle_id);
+		gridGR.addQuery('daily_puzzle', puzzleId);
 		gridGR.query();
 
 		while (gridGR.next()) {
@@ -527,6 +505,8 @@
 				data.grid.push(cellData);
 			}
 		}
+	} else {
+		data.error = 'No puzzles available';
 	}
 })();]]></script>
         <servicenow>false</servicenow>
@@ -543,25 +523,19 @@
         <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2025-11-05 09:07:41</sys_updated_on>
         <template><![CDATA[<div class="mini-crossword-container">
-	<!-- Puzzle Selector -->
-	<div class="puzzle-selector mb-4">
+	<!-- Puzzle Header -->
+	<div class="puzzle-header mb-4">
 		<h2>Mini Crossword</h2>
-		<div class="row">
-			<div class="col-md-8">
-				<label for="puzzleSelect">Select a Puzzle:</label>
-				<select id="puzzleSelect"
-						class="form-control"
-						ng-model="c.selectedPuzzle"
-						ng-change="c.selectPuzzle()"
-						ng-options="puzzle.sys_id as puzzle.name for puzzle in c.data.puzzles">
-					<option value="">-- Choose a puzzle --</option>
-				</select>
-			</div>
-		</div>
+		<p class="text-muted" ng-if="c.data.puzzleName">{{c.data.puzzleName}}</p>
 	</div>
 
-	<!-- Puzzle Grid and Clues (shown when puzzle is selected) -->
-	<div ng-if="c.data.grid && c.data.grid.length > 0">
+	<!-- Error Message -->
+	<div ng-if="c.data.error" class="alert alert-warning">
+		{{c.data.error}}
+	</div>
+
+	<!-- Puzzle Grid and Clues -->
+	<div ng-if="c.grid.length > 0">
 
 		<!-- Success Message -->
 		<div ng-if="c.isComplete" class="alert alert-success mb-3">
@@ -619,11 +593,6 @@
 				</div>
 			</div>
 		</div>
-	</div>
-
-	<!-- Empty State -->
-	<div ng-if="!c.data.grid || c.data.grid.length === 0" class="text-center text-muted mt-5">
-		<p>Select a puzzle above to start playing!</p>
 	</div>
 </div>]]></template>
     </sp_widget>
