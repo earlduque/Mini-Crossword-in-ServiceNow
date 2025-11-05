@@ -207,7 +207,7 @@
 
 		return classes.join(' ');
 	};
-}];]]></client_script>
+}]]></client_script>
         <controller_as>c</controller_as>
         <css><![CDATA[.mini-crossword-container {
 	max-width: 900px;
