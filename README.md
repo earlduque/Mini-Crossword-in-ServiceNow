@@ -8,33 +8,45 @@ This application brings the addictive mini crossword puzzle experience to Servic
 
 ## Features
 
-### Current Features
+### Current Features ✅
+- **Automated puzzle generation** with intelligent algorithm
+  - Variable-length word support (2-5 letters)
+  - Cross-word validation ensuring all formed words are valid
+  - True randomization with timestamp-based seeding
+  - Automatic detection and recording of all words including cross-words
+- **Interactive Service Portal widget**
+  - 5x5 crossword grid with classic design
+  - Keyboard navigation and input
+  - Real-time answer validation (green/red feedback)
+  - Auto-completion detection
+  - Mobile-responsive design
+  - Clue display organized by direction
 - **Structured puzzle system** with words, categories, and grid positioning
-- **Multiple play modes**:
-  - **Times Mode**: Daily puzzle with leaderboard competition
-  - **Zen Mode**: Random puzzles for unlimited practice
-- **Hint system** supporting both word and letter hints
-- **Leaderboard tracking** for competitive gameplay
 - **Category-based word organization** for themed puzzles
 - **Data import capability** for bulk word loading
 
-### Planned Features
-- Service Portal widget for interactive crossword gameplay
+### Planned Features 📋
+- **Multiple play modes**:
+  - **Times Mode**: Daily puzzle with leaderboard competition
+  - **Zen Mode**: Random puzzles for unlimited practice
 - Timer and scoring system
-- Real-time puzzle validation
+- **Hint system** supporting both word and letter hints
 - Hint usage tracking and penalties
-- Daily puzzle rotation
+- **Leaderboard tracking** for competitive gameplay
+- Daily puzzle rotation (scheduled job)
 - User statistics and progress tracking
+- Instance record creation for gameplay sessions
+- Game state persistence (save/resume)
 
 ## Table Structure
 
 The application uses the following core tables:
 
 ### `x_1468549_mini_c_0_word`
-Stores individual 5-letter words that can be used in puzzles.
-- **word**: The 5-letter word (max 5 characters)
-- **hint**: Clue text for the word (2048 characters)
-- **definition**: Full definition of the word (2048 characters)
+Stores individual words that can be used in puzzles (supports 2-5 letter words).
+- **word**: The word text (max 5 characters, minimum 2)
+- **hint**: Short clue text for the word (2048 characters)
+- **definition**: Full definition of the word (2048 characters) - **used as puzzle clue**
 - **category**: Reference to word_category table
 - **number**: Auto-generated identifier
 
@@ -58,11 +70,13 @@ Defines the placement of words within a specific puzzle's 5x5 grid.
 - **number**: Auto-generated identifier
 - **daily_puzzle**: Reference to the puzzle this grid entry belongs to
 - **word**: Reference to the word being placed
-- **row**: Grid row position (1-5)
-- **column**: Grid column position (1-5)
+- **row**: Grid row starting position (1-5)
+- **column**: Grid column starting position (1-5)
 - **direction**:
   - `horizontal` - Word reads left to right
   - `vertical` - Word reads top to bottom
+
+**Note**: Puzzles have variable word counts. The generation algorithm automatically records ALL valid words in the grid, including cross-words formed by word intersections.
 
 ### `x_1468549_mini_c_0_instance` (extends task)
 Represents a user's play session of a puzzle.
@@ -138,12 +152,13 @@ instance → leaderboard (implicit via user/score)
 
 ## How Puzzles Work
 
-1. **Grid Construction**: Each daily_puzzle has 10 puzzle_grid entries (5 horizontal + 5 vertical words)
-2. **Word Intersection**: Words must intersect correctly at shared grid cells
-3. **Clue Generation**: Each word's hint is displayed for its row/column number
+1. **Grid Construction**: Puzzles have variable word counts (minimum 3 words). The algorithm places words and automatically detects/records all formed words including cross-words.
+2. **Word Intersection**: ALL letter sequences (horizontal and vertical) must be valid dictionary words. The algorithm validates this during generation.
+3. **Clue Display**: Each word's definition is displayed organized by direction (Across/Down)
 4. **User Input**: Players type letters into the grid cells
-5. **Validation**: System checks if filled letters match the puzzle_grid word assignments
-6. **Scoring**: Based on completion time minus penalties for hints used
+5. **Real-time Validation**: Widget instantly shows if letters are correct (green) or incorrect (red)
+6. **Completion**: Success message displays when all cells are correctly filled
+7. **Scoring** (planned): Will be based on completion time minus penalties for hints used
 
 ## Development Status
 
@@ -151,29 +166,44 @@ instance → leaderboard (implicit via user/score)
 - Database schema design and table creation (8 core tables)
 - Table relationships and indexes
 - Security rules (ACLs)
-- **Automated puzzle generation algorithm**
+- **Automated puzzle generation algorithm** (`MiniCrossword` Script Include)
   - Backtracking constraint satisfaction approach
+  - **Variable-length word support** (2-5 letters)
+  - **Cross-word validation** - ALL formed words must be valid
+  - **Comprehensive word extraction** - Automatically records intentional + cross-words
+  - **True randomization**:
+    - Random puzzles: Timestamp-based seed for unique results
+    - Daily puzzles: Date-hash seed for consistency
   - Intelligent word placement with intersection validation
   - Supports category filtering or all-word puzzles
-  - Minimum 5 words, allows blank spaces
+  - Minimum 3 words, allows blank spaces
   - First row guarantee
 - **Puzzle validation logic**
 - **Full MiniCrossword Script Include with JSDoc documentation**
+- **Interactive Service Portal Widget** (`minicrossword`)
+  - Auto-loads random puzzle on page load
+  - 5x5 interactive grid with classic crossword design
+  - Keyboard navigation (letters, arrows, backspace)
+  - Real-time answer validation (green=correct, red=incorrect)
+  - Completion detection with success message
+  - Clue display organized by direction (Across/Down)
+  - Mobile-responsive design (desktop/tablet/mobile)
+  - Black/white square rendering for blank vs. fillable cells
 - Import template for word data
-
-### In Progress 🚧
-- Service Portal widget development
-- User gameplay validation
-- Scoring system
 
 ### To Do 📋
 - Timer functionality
 - Hint reveal logic (reveal word, reveal letter)
+- Hint usage tracking with penalties
 - Leaderboard ranking algorithm
-- Daily puzzle scheduling (scheduled job)
-- Mobile-responsive design
+- Leaderboard display widget
+- Daily puzzle scheduling (scheduled job to auto-generate)
 - User statistics dashboard
 - Game state persistence (save/resume)
+- Instance record creation for gameplay tracking
+- Score calculation and submission
+- Puzzle picker/selector interface
+- Times mode vs. Zen mode implementation
 
 ## Installation
 
@@ -182,9 +212,15 @@ This is a ServiceNow scoped application. To install:
 1. Import the application from source control into your ServiceNow instance
 2. Verify all tables and relationships are created
 3. Load initial word data via import set or manual entry
-4. Create word categories
-5. Build puzzle configurations
-6. Deploy Service Portal page with crossword widget
+   - Each word needs a `definition` field filled (used as the clue)
+   - Words can be 2-5 letters long
+4. Create word categories (optional, for themed puzzles)
+5. Generate puzzles using the `MiniCrossword` Script Include (see usage examples below)
+6. Create a Service Portal page and add the `minicrossword` widget:
+   ```html
+   <widget id="minicrossword"></widget>
+   ```
+7. Navigate to the page - widget will auto-load a random puzzle
 
 ## Usage
 
@@ -258,13 +294,22 @@ if (result.valid) {
 }
 ```
 
-### For Players (Once Service Portal is Complete)
+### For Players
 1. Navigate to the Mini Crossword Service Portal page
-2. Choose **"Times"** for daily competitive puzzle or **"Zen"** for random practice
-3. Click cells to select across/down words
-4. Type letters to fill in answers
-5. Use hint buttons if needed (affects score in Times mode)
-6. Complete the puzzle to see your time and leaderboard rank
+2. A random puzzle loads automatically
+3. **Controls**:
+   - **Click** any white cell to select it
+   - **Type letters** (A-Z) to fill in answers - automatically advances to next cell
+   - **Backspace** to delete and move back
+   - **Arrow keys** to navigate up/down/left/right
+4. **Visual Feedback**:
+   - Yellow highlight = currently selected cell
+   - Green cell = correct letter
+   - Red cell = incorrect letter
+5. **Clues** are displayed below the grid, organized by direction (Across/Down)
+6. Complete the puzzle to see the success message!
+
+**Note**: Timer, scoring, and hint features are coming soon!
 
 ## Technical Details
 
@@ -283,15 +328,21 @@ The application uses an intelligent **backtracking constraint satisfaction algor
 3. **Phase 3**: Attempts to place vertical words in columns 1-5
 
 **Key Features:**
+- **Variable-Length Words**: Supports 2-5 letter words in the same puzzle
+- **Cross-Word Validation**: ALL horizontal and vertical letter sequences must be valid dictionary words
+- **Comprehensive Word Recording**: Automatically detects and records all words including those formed by intersections
 - **Intersection Validation**: Ensures words share matching letters at crossing points
+- **True Randomization**:
+  - Random puzzles: Uses timestamp for unique puzzles each load
+  - Daily puzzles: Uses date hash for consistent daily results
 - **Retry Logic**: Up to 10 attempts with different word shuffles if generation fails
 - **Flexible Layout**: Allows blank spaces when no compatible words fit
-- **Minimum Threshold**: Requires at least 5 words for a valid puzzle
+- **Minimum Threshold**: Requires at least 3 words for a valid puzzle
 - **Category Support**: Can filter by word category or use entire word database
 
 **Algorithm Constraints:**
 - Grid size: 5x5
-- Word length: Exactly 5 letters
+- Word length: 2-5 letters (variable)
 - Max attempts per generation: 1,000 iterations
 - Max retries: 10 different starting configurations
 
@@ -327,15 +378,26 @@ This project is intended for educational and internal use within ServiceNow inst
 
 - **Phase 1**: Complete database structure ✅ **COMPLETED**
 - **Phase 2**: Implement puzzle generation algorithm ✅ **COMPLETED**
-- **Phase 3**: Develop Service Portal widget 🚧 **IN PROGRESS**
-- **Phase 4**: Implement game logic and user validation 🚧 **IN PROGRESS**
+- **Phase 3**: Develop Service Portal widget ✅ **COMPLETED**
+- **Phase 4**: Implement game logic and user validation ✅ **COMPLETED** (real-time validation working)
 - **Phase 5**: Add timer and scoring ⏳ **UPCOMING**
 - **Phase 6**: Create leaderboard displays ⏳ **UPCOMING**
 - **Phase 7**: Implement daily puzzle automation (scheduled jobs) ⏳ **UPCOMING**
-- **Phase 8**: Mobile optimization ⏳ **UPCOMING**
+- **Phase 8**: Mobile optimization ✅ **COMPLETED** (responsive design implemented)
 - **Phase 9**: Analytics and user statistics ⏳ **UPCOMING**
 
 ### Recent Updates
+
+**2025-11-05**:
+- ✅ Completed Service Portal widget (`minicrossword`) with full interactivity
+- ✅ Implemented keyboard navigation (letters, arrows, backspace)
+- ✅ Added real-time answer validation with visual feedback
+- ✅ Created mobile-responsive design with classic crossword styling
+- ✅ Improved puzzle generation with variable-length word support (2-5 letters)
+- ✅ Added cross-word validation ensuring ALL formed words are valid
+- ✅ Implemented automatic cross-word detection and recording
+- ✅ Fixed randomization to use timestamp for truly unique random puzzles
+- ✅ Changed clue source from `hint` to `definition` field
 
 **2025-10-22**:
 - ✅ Implemented complete puzzle generation algorithm with backtracking

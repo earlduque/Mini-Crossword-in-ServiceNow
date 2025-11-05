@@ -36,10 +36,10 @@ This is a **ServiceNow XML-based repository**. The application files are stored 
 
 ### Puzzle Construction Tables
 
-**`x_1468549_mini_c_0_word`** - 5-letter words used in puzzles
-- `word` (5 char max) - The actual word
-- `hint` (2048 char) - Clue text
-- `definition` (2048 char) - Full definition
+**`x_1468549_mini_c_0_word`** - Words used in puzzles (2-5 letters)
+- `word` (5 char max) - The actual word (supports 2-5 letter words)
+- `hint` (2048 char) - Short clue text
+- `definition` (2048 char) - Full definition (used as puzzle clue)
 - `category` - Reference to word_category
 
 **`x_1468549_mini_c_0_word_category`** - Themed categories (Sports, Food, etc.)
@@ -54,10 +54,10 @@ This is a **ServiceNow XML-based repository**. The application files are stored 
 **`x_1468549_mini_c_0_puzzle_grid`** - Word placement in 5x5 grid
 - `daily_puzzle` - Reference to puzzle
 - `word` - Reference to word
-- `row` (1-5) - Grid row position
-- `column` (1-5) - Grid column position
+- `row` (1-5) - Grid row position (starting position)
+- `column` (1-5) - Grid column position (starting position)
 - `direction` - "horizontal" or "vertical"
-- Each puzzle has exactly 10 puzzle_grid entries (5 across + 5 down)
+- Note: Puzzles have variable word counts (minimum 3 words). All valid words including cross-words are recorded.
 
 ### Gameplay Tables
 
@@ -93,27 +93,38 @@ This is a **ServiceNow XML-based repository**. The application files are stored 
 
 ## Development Status
 
-### Completed
+### Completed ✅
 - Database schema (all 8 tables)
 - Table relationships and indexes
 - Security rules (ACLs)
 - **Puzzle generation algorithm with backtracking and constraint satisfaction**
+  - Variable-length word support (2-5 letters)
+  - Cross-word validation (all formed words must be valid)
+  - Timestamp-based randomization for truly random puzzles
+  - Date-based seeding for consistent daily puzzles
+  - Automatic extraction and recording of all words (including cross-words)
 - **Puzzle validation logic**
 - **MiniCrossword Script Include with full JSDoc documentation**
+- **Service Portal widget (minicrossword)**
+  - Auto-loads random puzzle on page load
+  - Interactive 5x5 crossword grid
+  - Keyboard navigation (arrows, letters, backspace)
+  - Real-time answer validation (green=correct, red=incorrect)
+  - Completion detection
+  - Clue display (Across/Down with position indicators)
+  - Mobile-responsive design
+  - Classic crossword appearance with black/white squares
 - Import template for word data
 
-### In Progress
-- Service Portal widget development
-- User gameplay validation
-- Scoring system
-
-### To Do
+### To Do 📋
 - Timer functionality
 - Hint reveal logic (reveal word, reveal letter)
 - Leaderboard ranking algorithm
 - Daily puzzle scheduling (scheduled job to auto-generate)
-- Mobile-responsive design
 - Game state persistence (save/resume)
+- Puzzle picker/selector (currently auto-loads random)
+- Instance record creation for gameplay tracking
+- Score calculation and submission
 
 ## Working with ServiceNow Source Control
 
@@ -130,6 +141,77 @@ This is a **ServiceNow XML-based repository**. The application files are stored 
 ServiceNow uses sys_ids in filenames. For example:
 - `sys_script_include_2f0e82fc53f83e10db6151a0a0490e40.xml` = MiniCrossword Script Include
 - Table prefixes: `sys_dictionary_*`, `sys_choice_*`, `sys_security_acl_*`, `sp_widget_*`
+
+## Service Portal Widget
+
+**Widget ID**: `minicrossword`
+**File**: `sp_widget_83795c5d53817a10db6151a0a0490e2d.xml`
+
+### Features
+
+The Mini Crossword Service Portal widget provides a complete interactive crossword experience:
+
+**User Interface:**
+- 5x5 crossword grid with classic black/white square design
+- Blank cells (black squares) for unused grid positions
+- Input cells (white squares) for letter entry
+- Active cell highlighting (yellow)
+- Real-time validation feedback (green=correct, red=incorrect)
+- Success message on puzzle completion
+
+**Gameplay:**
+- Auto-loads a random puzzle on page load
+- Click any white cell to select and start typing
+- Type letters (A-Z) - automatically advances to next cell
+- Backspace - deletes current letter and moves to previous cell
+- Arrow keys - navigate up/down/left/right through grid
+- Automatically skips blank (black) cells during navigation
+
+**Clue Display:**
+- Organized by direction (Across / Down)
+- Numbered clues with hints/definitions
+- Position indicators (Row X, Col Y) for each clue
+- Hover effects for better readability
+
+**Responsive Design:**
+- Desktop: 50px × 50px cells
+- Tablet (≤768px): 45px × 45px cells
+- Mobile (≤576px): 40px × 40px cells
+- Stacked clue layout on mobile devices
+
+### Technical Implementation
+
+**Server Script:**
+- Queries random puzzle from `x_1468549_mini_c_0_daily_puzzle`
+- Loads all words from `x_1468549_mini_c_0_puzzle_grid`
+- Fetches definitions from `x_1468549_mini_c_0_word` table
+- Builds 5x5 grid structure with cell metadata
+- Organizes clues by direction and position
+
+**Client Controller (AngularJS):**
+- Grid initialization from server data
+- Cell selection and focus management
+- Keyboard event handling
+- Real-time answer validation
+- Puzzle completion detection
+- Navigation logic (horizontal/vertical movement)
+
+**Styling:**
+- Classic crossword aesthetic
+- Black borders with 3px outer border
+- Box shadow for depth
+- Color-coded cell states (active, correct, incorrect)
+- Smooth animations and transitions
+- Bootstrap 5 integration
+
+### Usage
+
+Add widget to Service Portal page:
+```html
+<widget id="minicrossword"></widget>
+```
+
+The widget will automatically load a random puzzle and be ready to play immediately.
 
 ## Script Includes
 
@@ -172,15 +254,20 @@ The generation uses a three-phase approach:
 3. **Phase 3 - Vertical Words**: Attempts to place words in columns 1-5
 
 **Key Features:**
-- Backtracking with retry logic (up to 10 attempts with different word shuffles)
-- Intersection validation (letters must match at crossing points)
-- Minimum 5 words required for valid puzzle
-- Allows blank spaces when no compatible words fit
-- Seeded random shuffling for variety while maintaining reproducibility
+- **Variable-length word support**: Handles words from 2-5 letters
+- **Cross-word validation**: ALL horizontal and vertical sequences must be valid dictionary words
+- **Backtracking with retry logic**: Up to 10 attempts with different word shuffles
+- **Intersection validation**: Letters must match at crossing points
+- **Comprehensive word extraction**: Records all words including those formed by intersections
+- **True randomization**:
+  - Random puzzles: Timestamp-based seed for unique puzzles each time
+  - Daily puzzles: Date-hash seed for consistent daily results
+- **Minimum word threshold**: Minimum 3 words required for valid puzzle
+- **Flexible layout**: Allows blank spaces when no compatible words fit
 
 **Configuration Constants:**
 - `GRID_SIZE`: 5 (5x5 grid)
-- `MIN_WORD_COUNT`: 5 (minimum words for valid puzzle)
+- `MIN_WORD_COUNT`: 3 (minimum words for valid puzzle)
 - `MAX_ATTEMPTS`: 1000 (max iterations per generation attempt)
 - `MAX_RETRIES`: 10 (max retry attempts with different seeds)
 
@@ -254,12 +341,15 @@ Critical constraint: **Words must intersect correctly**
 The implemented algorithm handles flexible puzzle layouts:
 
 **Flexible Grid Rules:**
+- Words can be 2-5 letters long (variable length support)
 - Words can start at any row/column position (not just position 1)
-- Minimum 5 words required (not necessarily 10)
+- Minimum 3 words required (not a fixed 10-word grid)
 - Blank spaces allowed when no compatible words fit
 - First row must contain at least one horizontal word
 - Words intersect only when they share grid cells
 - At intersection points, letters MUST match exactly
+- **Critical**: ALL letter sequences (horizontal and vertical) must form valid words
+- Cross-words formed by intersections are automatically detected and recorded
 
 **Intersection Validation:**
 ```javascript
