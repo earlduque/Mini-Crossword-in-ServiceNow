@@ -31,7 +31,7 @@ MiniCrossword.prototype = {
      *
      * Grid Constraints:
      * - 5x5 grid maximum size
-     * - Words are exactly 5 letters long
+     * - Words can be 2-5 letters long (variable length)
      * - Minimum 3 words required for a valid puzzle
      * - First row must contain at least one horizontal word
      * - Words must intersect with matching letters at shared cells
@@ -169,8 +169,10 @@ MiniCrossword.prototype = {
 
         while (gr.next()) {
             var wordRecord = gr.word.getRefRecord();
+            var wordText = wordRecord.getValue('word').toUpperCase();
             var placement = {
-                word: wordRecord.getValue('word').toUpperCase(),
+                word: wordText,
+                length: wordText.length,
                 row: parseInt(gr.getValue('row')),
                 col: parseInt(gr.getValue('column')),
                 direction: gr.getValue('direction'),
@@ -179,7 +181,7 @@ MiniCrossword.prototype = {
             wordPlacements.push(placement);
 
             // Place word in grid
-            for (var i = 0; i < this.GRID_SIZE; i++) {
+            for (var i = 0; i < placement.length; i++) {
                 var r = placement.direction === 'horizontal' ? placement.row : placement.row + i;
                 var c = placement.direction === 'horizontal' ? placement.col + i : placement.col;
 
@@ -323,10 +325,12 @@ MiniCrossword.prototype = {
 
         while (gr.next()) {
             var wordText = gr.getValue('word');
-            if (wordText && wordText.length === this.GRID_SIZE) {
+            // Accept words between 2 and GRID_SIZE (5) letters
+            if (wordText && wordText.length >= 2 && wordText.length <= this.GRID_SIZE) {
                 words.push({
                     sysId: gr.getUniqueValue(),
                     word: wordText.toUpperCase(),
+                    length: wordText.length,
                     hint: gr.getValue('hint'),
                     category: gr.getValue('category')
                 });
@@ -348,16 +352,18 @@ MiniCrossword.prototype = {
     },
 
     _canPlaceWord: function(grid, word, row, col, direction) {
+        var wordLength = word.length;
+
         // Check if word fits in grid bounds
-        if (direction === 'horizontal' && col + this.GRID_SIZE - 1 > this.GRID_SIZE) {
+        if (direction === 'horizontal' && col + wordLength - 1 > this.GRID_SIZE) {
             return false;
         }
-        if (direction === 'vertical' && row + this.GRID_SIZE - 1 > this.GRID_SIZE) {
+        if (direction === 'vertical' && row + wordLength - 1 > this.GRID_SIZE) {
             return false;
         }
 
         // Check each position
-        for (var i = 0; i < this.GRID_SIZE; i++) {
+        for (var i = 0; i < wordLength; i++) {
             var r = direction === 'horizontal' ? row : row + i;
             var c = direction === 'horizontal' ? col + i : col;
 
@@ -374,7 +380,9 @@ MiniCrossword.prototype = {
 
     _placeWord: function(grid, wordObj, row, col, direction) {
         var word = wordObj.word;
-        for (var i = 0; i < this.GRID_SIZE; i++) {
+        var wordLength = word.length;
+
+        for (var i = 0; i < wordLength; i++) {
             var r = direction === 'horizontal' ? row : row + i;
             var c = direction === 'horizontal' ? col + i : col;
 
@@ -396,7 +404,9 @@ MiniCrossword.prototype = {
             if (this._canPlaceWord(grid, word.word, row, col, direction)) {
                 // Check if word actually intersects with at least one existing word
                 var hasIntersection = false;
-                for (var pos = 0; pos < this.GRID_SIZE; pos++) {
+                var wordLength = word.word.length;
+
+                for (var pos = 0; pos < wordLength; pos++) {
                     var r = direction === 'horizontal' ? row : row + pos;
                     var c = direction === 'horizontal' ? col + pos : col;
                     if (grid[r][c] !== null) {
