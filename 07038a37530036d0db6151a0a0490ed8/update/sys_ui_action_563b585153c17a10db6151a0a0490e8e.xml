@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_ui_action">
+    <sys_ui_action action="INSERT_OR_UPDATE">
+        <action_name>sysverb_newpuzzle</action_name>
+        <active>true</active>
+        <client>false</client>
+        <client_script_v2><![CDATA[function onClick(g_form) {
+
+}]]></client_script_v2>
+        <comments/>
+        <condition/>
+        <form_action>false</form_action>
+        <form_button>false</form_button>
+        <form_button_v2>false</form_button_v2>
+        <form_context_menu>false</form_context_menu>
+        <form_link>false</form_link>
+        <form_menu_button_v2>false</form_menu_button_v2>
+        <form_style/>
+        <format_for_configurable_workspace>false</format_for_configurable_workspace>
+        <hint/>
+        <isolate_script>false</isolate_script>
+        <list_action>true</list_action>
+        <list_banner_button>true</list_banner_button>
+        <list_button>false</list_button>
+        <list_choice>false</list_choice>
+        <list_context_menu>false</list_context_menu>
+        <list_link>false</list_link>
+        <list_save_with_form_button>false</list_save_with_form_button>
+        <list_style/>
+        <messages/>
+        <name>New puzzle</name>
+        <onclick/>
+        <order>100</order>
+        <script><![CDATA[var mc = new MiniCrossword();
+
+gs.info('Starting puzzle generation...');
+
+var result = mc.generatePuzzle(null, 'random', null);
+
+gs.info('=== RESULT ===');
+gs.info('Success: ' + result.success);
+gs.info('Message: ' + result.message);
+gs.info('Puzzle Sys ID: ' + result.puzzleSysId);
+gs.info('Word Count: ' + result.wordCount);
+gs.info('Grid Coverage: ' + result.gridCoverage);
+gs.info('Attempts Used: ' + result.attemptsUsed);
+
+// If successful, check if records were created
+if (result.success && result.puzzleSysId) {
+    var puzzleGR = new
+    GlideRecord('x_1468549_mini_c_0_daily_puzzle');
+    if (puzzleGR.get(result.puzzleSysId)) {
+        gs.info('✓ Daily puzzle record EXISTS: ' +
+            puzzleGR.getDisplayValue());
+
+        // Check grid records
+        var gridGR = new
+        GlideRecord('x_1468549_mini_c_0_puzzle_grid');
+        gridGR.addQuery('daily_puzzle', result.puzzleSysId);
+        gridGR.query();
+        gs.info('✓ Puzzle grid records count: ' +
+            gridGR.getRowCount());
+
+        while (gridGR.next()) {
+            gs.info('  Grid entry: word=' + gridGR.word.word +
+                ', row=' + gridGR.getValue('row') + ', col=' +
+                gridGR.getValue('column') + ', dir=' +
+                gridGR.getValue('direction'));
+        }
+    } else {
+        gs.error('✗ Daily puzzle record NOT FOUND with sys_id: ' +
+            result.puzzleSysId);
+    }
+}]]></script>
+        <show_insert>true</show_insert>
+        <show_multiple_update>false</show_multiple_update>
+        <show_query>false</show_query>
+        <show_update>true</show_update>
+        <sys_class_name>sys_ui_action</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-11-05 09:15:57</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>563b585153c17a10db6151a0a0490e8e</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>New puzzle</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Mini-crossword" source="x_1468549_mini_c_0">07038a37530036d0db6151a0a0490ed8</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Mini-crossword">07038a37530036d0db6151a0a0490ed8</sys_scope>
+        <sys_update_name>sys_ui_action_563b585153c17a10db6151a0a0490e8e</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-11-05 09:16:57</sys_updated_on>
+        <table>x_1468549_mini_c_0_daily_puzzle</table>
+        <ui11_compatible>true</ui11_compatible>
+        <ui16_compatible>false</ui16_compatible>
+    </sys_ui_action>
+</record_update>
