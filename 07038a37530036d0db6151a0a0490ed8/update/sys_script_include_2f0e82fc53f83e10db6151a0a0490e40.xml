@@ -25,6 +25,10 @@ MiniCrossword.prototype = {
      * that intersect correctly (matching letters at intersection points). The algorithm uses backtracking
      * to find valid word placements and allows for blank spaces when perfect fills aren't possible.
      *
+     * After generation, ALL valid words in the grid are extracted and recorded, including both:
+     * - Intentionally placed words (e.g., placing "FN" horizontally)
+     * - Cross-words formed by intersections (e.g., "DR" formed by "FD" and "NRT" vertically)
+     *
      * Randomization Behavior:
      * - Random puzzles: Uses current timestamp as seed, generating unique puzzles each time
      * - Daily puzzles: Uses date string hash as seed, ensuring same date produces same puzzle
@@ -38,6 +42,7 @@ MiniCrossword.prototype = {
      * - CRITICAL: ALL horizontal and vertical letter sequences must form valid dictionary words
      * - Cross-word validation ensures no invalid words are formed by intersections
      * - Blank spaces are allowed when no valid word fits
+     * - ALL valid words (including cross-words) are recorded as puzzle_grid entries
      *
      * @param {String} categorySysId - (Optional) sys_id of the word_category record. If null/empty, uses all available words
      * @param {String} puzzleType - Type of puzzle: 'daily' or 'random'
@@ -106,15 +111,18 @@ MiniCrossword.prototype = {
             result = this._attemptPuzzleGeneration(wordPool, seed);
 
             if (result.success && result.wordCount >= this.MIN_WORD_COUNT) {
+                // Extract ALL words from the final grid (including cross-words)
+                var allWords = this._extractAllWordsFromGrid(result.grid, wordPool);
+
                 // Successfully generated valid puzzle - create database records
-                var puzzleSysId = this._createPuzzleRecords(result.grid, categorySysId, puzzleType, puzzleDate);
+                var puzzleSysId = this._createPuzzleRecords(allWords, categorySysId, puzzleType, puzzleDate);
 
                 return {
                     success: true,
                     puzzleSysId: puzzleSysId,
-                    wordCount: result.wordCount,
+                    wordCount: allWords.length,
                     gridCoverage: result.gridCoverage,
-                    message: 'Puzzle generated successfully',
+                    message: 'Puzzle generated successfully with ' + allWords.length + ' total words (including cross-words)',
                     attemptsUsed: retryCount
                 };
             }
@@ -493,6 +501,109 @@ MiniCrossword.prototype = {
         }
 
         return hasLetters ? word : null;
+    },
+
+    _extractAllWordsFromGrid: function(placedWords, wordPool) {
+        // Build the grid from placed words
+        var grid = this._createEmptyGrid();
+        for (var i = 0; i < placedWords.length; i++) {
+            this._placeWord(grid, placedWords[i].word, placedWords[i].row, placedWords[i].col, placedWords[i].direction);
+        }
+
+        // Create word lookup map for matching sequences to sys_ids
+        var wordMap = {};
+        for (var w = 0; w < wordPool.length; w++) {
+            wordMap[wordPool[w].word] = wordPool[w].sysId;
+        }
+
+        var allWords = [];
+        var recordedWords = {}; // Track to avoid duplicates
+
+        // Extract all horizontal words
+        for (var row = 1; row <= this.GRID_SIZE; row++) {
+            var sequence = '';
+            var startCol = null;
+
+            for (var col = 1; col <= this.GRID_SIZE; col++) {
+                if (grid[row][col] !== null) {
+                    if (startCol === null) startCol = col;
+                    sequence += grid[row][col].letter;
+                } else {
+                    // End of sequence
+                    if (sequence.length >= 2 && wordMap[sequence]) {
+                        var key = 'H_' + row + '_' + startCol + '_' + sequence;
+                        if (!recordedWords[key]) {
+                            allWords.push({
+                                word: { sysId: wordMap[sequence], word: sequence },
+                                row: row,
+                                col: startCol,
+                                direction: 'horizontal'
+                            });
+                            recordedWords[key] = true;
+                        }
+                    }
+                    sequence = '';
+                    startCol = null;
+                }
+            }
+            // Check final sequence
+            if (sequence.length >= 2 && wordMap[sequence]) {
+                var key = 'H_' + row + '_' + startCol + '_' + sequence;
+                if (!recordedWords[key]) {
+                    allWords.push({
+                        word: { sysId: wordMap[sequence], word: sequence },
+                        row: row,
+                        col: startCol,
+                        direction: 'horizontal'
+                    });
+                    recordedWords[key] = true;
+                }
+            }
+        }
+
+        // Extract all vertical words
+        for (var col = 1; col <= this.GRID_SIZE; col++) {
+            var sequence = '';
+            var startRow = null;
+
+            for (var row = 1; row <= this.GRID_SIZE; row++) {
+                if (grid[row][col] !== null) {
+                    if (startRow === null) startRow = row;
+                    sequence += grid[row][col].letter;
+                } else {
+                    // End of sequence
+                    if (sequence.length >= 2 && wordMap[sequence]) {
+                        var key = 'V_' + startRow + '_' + col + '_' + sequence;
+                        if (!recordedWords[key]) {
+                            allWords.push({
+                                word: { sysId: wordMap[sequence], word: sequence },
+                                row: startRow,
+                                col: col,
+                                direction: 'vertical'
+                            });
+                            recordedWords[key] = true;
+                        }
+                    }
+                    sequence = '';
+                    startRow = null;
+                }
+            }
+            // Check final sequence
+            if (sequence.length >= 2 && wordMap[sequence]) {
+                var key = 'V_' + startRow + '_' + col + '_' + sequence;
+                if (!recordedWords[key]) {
+                    allWords.push({
+                        word: { sysId: wordMap[sequence], word: sequence },
+                        row: startRow,
+                        col: col,
+                        direction: 'vertical'
+                    });
+                    recordedWords[key] = true;
+                }
+            }
+        }
+
+        return allWords;
     },
 
     _isFirstInDirection: function(grid, direction) {
